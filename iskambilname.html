@@ -1,46 +1,72 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>İskambilname – MEHH</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>İskambilname — MEHH</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <div class="page">
+<div class="page">
 
-    <!-- NAVBAR -->
-    <header class="navbar">
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="nav-left">
       <a href="index.html" class="logo">MEHH</a>
-      <nav class="nav-links">
-        <a href="games.html">Games</a>
-        <a href="apps.html">Apps</a>
-        <a href="experiments.html">Experiments</a>
-        <a href="index.html#contact">Contact</a>
-      </nav>
-    </header>
+      <img class="mehh-icon" src="img/mehh-logo.svg" alt="MEHH logo" />
+    </div>
 
-    <!-- HERO – COMING SOON -->
-    <section class="product-hero hero-isk">
-      <div class="product-hero-left">
-        <h1>İSKAMBİLNAME</h1>
+    <nav class="nav-links">
+      <a href="games.html">Games</a>
+      <a href="apps.html">Apps</a>
+      <a href="experiments.html">Experiments</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
 
-        <p class="product-tagline">
-          25+ games, one deck, infinite chaos.
-        </p>
 
-        <p class="product-desc">
-          Full ürün sayfası üzerinde çalışıyoruz. İlk baskı yakında.
-          Şimdilik sadece şunu bil:
-          tek deste, bol oyun, bol kaos.
-        </p>
+  <!-- HERO — GREEN -->
+  <section class="hero hero-blue">
+    <h1>İskambilname</h1>
+    <p>25+ games. One deck. Infinite chaos.</p>
+  </section>
+
+
+  <!-- CONTENT -->
+  <section class="cards-row">
+
+    <div class="card card-yellow">
+      <img class="card-icon" src="img/icon-games.svg" alt="Deck icon" />
+      <div class="card-text">
+        <h3>One deck, many worlds</h3>
+        <p>Play 25+ unique games designed specially for this deck.</p>
       </div>
-    </section>
+    </div>
 
-    <!-- FOOTER -->
-    <footer class="footer">
-      © 2025 MEHH — lifeismehh.com
-    </footer>
+    <div class="card card-orange">
+      <img class="card-icon" src="img/icon-experiments.svg" alt="Rules icon" />
+      <div class="card-text">
+        <h3>Simple or chaotic</h3>
+        <p>Party games, strategy games, bluffing games — all in one box.</p>
+      </div>
+    </div>
 
-  </div>
+    <div class="card card-green">
+      <img class="card-icon" src="img/icon-apps.svg" alt="Coming soon icon" />
+      <div class="card-text">
+        <h3>Coming soon</h3>
+        <p>First edition printing soon. Follow MEHH for updates.</p>
+      </div>
+    </div>
+
+  </section>
+
+
+  <footer class="footer">
+    © 2025 MEHH — lifeismehh.com
+  </footer>
+
+</div>
 </body>
 </html>

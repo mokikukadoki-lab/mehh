@@ -1,109 +1,71 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Yapımcı Arıyorum – MEHH</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yapımcı Arıyorum — MEHH</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <div class="page">
+<div class="page">
 
-    <!-- NAVBAR -->
-    <header class="navbar">
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="nav-left">
       <a href="index.html" class="logo">MEHH</a>
-      <nav class="nav-links">
-        <a href="games.html">Games</a>
-        <a href="apps.html">Apps</a>
-        <a href="experiments.html">Experiments</a>
-        <a href="index.html#contact">Contact</a>
-      </nav>
-    </header>
+      <img class="mehh-icon" src="img/mehh-logo.svg" alt="MEHH logo" />
+    </div>
 
-    <!-- ÜRÜN HERO -->
-    <section class="product-hero">
-      <div class="product-hero-left">
-        <h1>YAPIMCI ARIYORUM</h1>
+    <nav class="nav-links">
+      <a href="games.html">Games</a>
+      <a href="apps.html">Apps</a>
+      <a href="experiments.html">Experiments</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
 
-        <p class="product-tagline">A chaotic film-industry pitching card game.</p>
 
-        <p class="product-meta">
-          Players: 3–6 • Time: 30–45 min • Age 14+
-        </p>
+  <!-- HERO — GREEN -->
+  <section class="hero hero-yellow">
+    <h1>Yapımcı Arıyorum</h1>
+    <p>A chaotic film-industry pitching game.</p>
+  </section>
 
-        <p class="product-desc">
-          Pitch ridiculous movies to shark producers and hope they don’t eat you alive.
-        </p>
+
+  <!-- CONTENT -->
+  <section class="cards-row">
+    <div class="card card-orange">
+      <img class="card-icon" src="img/icon-games.svg" alt="Pitching icon" />
+      <div class="card-text">
+        <h3>Pitch ridiculous movies</h3>
+        <p>Genre + character + twist = pure chaos. Build the weirdest film you can.</p>
       </div>
+    </div>
 
-      <div class="product-hero-right">
-        <!-- Buradaki yolu kendi dosya adına göre düzelt -->
-        <img src="img/yapimci-box.png" alt="Yapımcı Arıyorum kutu görseli" />
+    <div class="card card-green">
+      <img class="card-icon" src="img/icon-experiments.svg" alt="Chaos icon" />
+      <div class="card-text">
+        <h3>Convince the producers</h3>
+        <p>Sell your idea, trash your rivals, survive the shark table.</p>
       </div>
-    </section>
+    </div>
 
-    <!-- PITCH OR GET EATEN -->
-    <section class="pitch-banner">
-      <h2>Pitch or get eaten.</h2>
-    </section>
-
-    <!-- 3 ADIM BLOĞU -->
-    <section class="steps-row">
-      <div class="step-card step-1">
-        <h3>1. Film brief’ini kap</h3>
-        <p>Tür, karakter ve film adı kartlarıyla saçma ama ilgi çekici bir film fikri yakala.</p>
+    <div class="card card-blue">
+      <img class="card-icon" src="img/icon-apps.svg" alt="Box icon" />
+      <div class="card-text">
+        <h3>What’s inside?</h3>
+        <p>Genre cards, character cards, title cards, twists, quick start sheet.</p>
       </div>
+    </div>
+  </section>
 
-      <div class="step-card step-2">
-        <h3>2. Saçma filmi inşa et</h3>
-        <p>Elindeki kartları birleştir, absürt detaylar ekle ve hikâyeni şişir.</p>
-      </div>
 
-      <div class="step-card step-3">
-        <h3>3. Yapımcıya pitch et</h3>
-        <p>Masadaki yapımcıyı ikna et, rakiplerin projelerini göm, filmi kapmaya çalış.</p>
-      </div>
-    </section>
+  <!-- FOOTER -->
+  <footer class="footer">
+    © 2025 MEHH — lifeismehh.com
+  </footer>
 
-    <!-- BİLGİ KUTULARI -->
-    <section class="info-grid">
-      <div class="info-box">
-        <h3>What’s in the box?</h3>
-        <ul>
-          <li>Tür kartları</li>
-          <li>Karakter kartları</li>
-          <li>Film adı kartları</li>
-          <li>Twist / kaos kartları</li>
-          <li>Referans &amp; quick start kartı</li>
-        </ul>
-      </div>
-
-      <div class="info-box">
-        <h3>Who is this game for?</h3>
-        <ul>
-          <li>Saçma film fikirleri biriktirenler</li>
-          <li>Festival, sinema ve improv seven arkadaş grupları</li>
-          <li>“Ciddi değil ama zeki” party game arayanlar</li>
-          <li>Bolca kahkaha ve hafif kaos seven herkes</li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- COMING SOON / NOTIFY -->
-    <section class="coming-box">
-      <h3>Coming soon.</h3>
-      <p>
-        İlk baskı üzerinde çalışıyoruz. Ready olduğunda haber almak için
-        e-posta listesine katıl:
-      </p>
-      <!-- Şimdilik gerçek form yok, placeholder buton -->
-      <button class="notify-btn">Notify me</button>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="footer">
-      © 2025 MEHH — lifeismehh.com
-    </footer>
-
-  </div>
+</div>
 </body>
 </html>

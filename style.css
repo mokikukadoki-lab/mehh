@@ -1,389 +1,193 @@
-/* RESET */
+/* -------------------------------------------------- */
+/* TOKENS & RESET                                     */
+/* -------------------------------------------------- */
+
+:root {
+  --mehh-bg:        #FAE8CC;
+  --mehh-border:    #0A0A0A;
+  --mehh-text:      #0A0A0A;
+
+  --mehh-yellow:    #FFE774;
+  --mehh-green:     #B3F7C6;
+  --mehh-orange:    #FFA96A;
+  --mehh-blue:      #9CC9FF;
+
+  --radius-xl: 32px;
+  --radius-lg: 26px;
+
+  --space-1: 6px;
+  --space-2: 10px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+
+  --icon-size: 48px;
+  --border-size: 3px;
+}
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #f8ebd8;
-    color: #111827;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--mehh-bg);
+  color: var(--mehh-text);
+  padding: var(--space-4);
 }
 
 .page {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 1.5rem 1.25rem 3rem;
+  max-width: 1080px;
+  margin: 0 auto;
 }
 
-/* NAVBAR */
+/* -------------------------------------------------- */
+/* NAVBAR                                              */
+/* -------------------------------------------------- */
+
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .logo {
-    font-weight: 900;
-    font-size: 1.4rem;
-    text-decoration: none;
-    color: #111827;
-    letter-spacing: 0.05em;
-}
-
-.navbar nav a {
-    margin-left: 1.4rem;
-    text-decoration: none;
-    color: #111827;
-    font-size: 1rem;
-}
-
-/* HERO BLOCKS */
-.hero {
-    border: 3px solid #111827;
-    border-radius: 32px;
-    padding: 4rem 2rem;
-    text-align: center;
-    margin-bottom: 3rem;
-}
-
-.hero-green {
-    background: #69c48a;
-}
-
-.hero-yellow {
-    background: #ffdd67;
-}
-
-.hero h1 {
-    font-size: 2.6rem;
-    font-weight: 900;
-    margin-bottom: 1rem;
-}
-
-.hero p {
-    font-size: 1.1rem;
-    max-width: 680px;
-    margin: 0 auto;
-}
-
-/* GAME / APP / EXPERIMENT CARDS */
-.game-grid {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-top: 1rem;
-    margin-bottom: 2rem;
-}
-
-.game-card {
-    flex: 1;
-    border: 3px solid #111827;
-    border-radius: 24px;
-    padding: 1.5rem;
-    text-align: center;
-    text-decoration: none;
-    color: #111827;
-}
-
-.game-card h3 {
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.game-card p {
-    font-size: 0.95rem;
-}
-
-.yellow { background: #ffdf8c; }
-.mint   { background: #b5f6d0; }
-.orange { background: #ffa869; }
-
-.card-link {
+  font-weight: 900;
+  font-size: 1.6rem;
   text-decoration: none;
-  color: inherit;
+  color: var(--mehh-text);
 }
 
-.card-link:hover {
+.nav-links a {
+  margin-left: var(--space-4);
+  text-decoration: none;
+  color: var(--mehh-text);
+  font-size: 1.05rem;
+}
+
+.mehh-icon {
+  width: 40px;
   transform: translateY(-2px);
 }
 
-/* FOOTER */
-footer {
-    margin-top: 2rem;
-    text-align: center;
-    font-size: 0.95rem;
+/* -------------------------------------------------- */
+/* HERO COLORS                                         */
+/* -------------------------------------------------- */
+
+.hero {
+  border: var(--border-size) solid var(--mehh-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  text-align: center;
+  margin-bottom: var(--space-5);
 }
 
-footer a {
-    color: #111827;
-}
+.hero-yellow { background: var(--mehh-yellow); }
+.hero-green  { background: var(--mehh-green); }
+.hero-orange { background: var(--mehh-orange); }
+.hero-blue   { background: var(--mehh-blue); }
 
-footer .copyright {
-    margin-top: 0.6rem;
-    font-size: 0.9rem;
-    opacity: 0.7;
-}
-
-/* RESPONSIVE */
-@media (max-width: 700px) {
-    .game-grid {
-        flex-direction: column;
-    }
-}
-/* ----------------------------- */
-/* YAPIMCI ARIYORUM – PRODUCT PAGE */
-/* ----------------------------- */
-
-.product-hero {
-  background: #fcd34d;              /* sarı */
-  border: 3px solid #111827;
-  border-radius: 28px;
-  padding: 2.5rem 2rem;
-  margin-bottom: 2rem;
-
-  display: flex;
-  gap: 2rem;
-  align-items: flex-end;
-  justify-content: space-between;
-}
-
-.product-hero-left h1 {
-  font-size: clamp(2.2rem, 4vw, 3rem);
+.hero h1 {
+  font-size: 2.1rem;
   font-weight: 900;
-  margin-bottom: 0.4rem;
+  margin-bottom: var(--space-2);
 }
 
-.product-tagline {
-  font-size: 1.05rem;
-  margin-bottom: 0.4rem;
+.hero p {
+  font-size: 1.1rem;
+  max-width: 640px;
+  margin: 0 auto;
 }
 
-.product-meta {
-  font-weight: 600;
-  margin-bottom: 0.6rem;
-}
+/* -------------------------------------------------- */
+/* CATEGORY CARDS                                      */
+/* -------------------------------------------------- */
 
-.product-desc {
-  max-width: 420px;
-  line-height: 1.45;
-}
-
-.product-hero-right img {
-  max-width: 260px;
-  display: block;
-  transform: translateY(28px);  /* kutu biraz aşağı taşsın */
-}
-
-/* Pitch or get eaten banner */
-.pitch-banner {
-  background: #ffe8a3;
-  border-radius: 24px;
-  border: 3px solid #111827;
-  padding: 0.9rem 1.6rem;
-  display: inline-block;
-  margin-bottom: 1.7rem;
-}
-
-.pitch-banner h2 {
-  font-size: 1.4rem;
-  font-weight: 800;
-}
-
-/* Steps & info grid zaten var ama tekrar tanımlamak sorun yaratmazsa: */
-
-.steps-row {
+.cards-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
 }
 
-.step-card {
-  border: 2px solid #111827;
-  border-radius: 24px;
-  padding: 1.1rem 1rem;
-  background: #fef3e6;
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: var(--border-size) solid var(--mehh-border);
+  text-decoration: none;
+  color: var(--mehh-text);
+}
+.card-yellow { background: var(--mehh-yellow); }
+.card-green  { background: var(--mehh-green); }
+.card-orange { background: var(--mehh-orange); }
+.card-blue   { background: var(--mehh-blue); }
+
+.card-icon {
+  width: var(--icon-size);
 }
 
-.step-card h3 {
-  margin-bottom: 0.4rem;
-  font-size: 1.05rem;
+.card-text h3 {
+  font-weight: 700;
+  margin-bottom: var(--space-1);
 }
 
-/* step renkleri */
-.step-1 { background: #d1fae5; }
-.step-2 { background: #fde68a; }
-.step-3 { background: #fdba74; }
-
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.2rem;
-  margin: 2rem 0;
+.card-text p {
+  font-size: 0.95rem;
 }
 
-.info-box {
-  border: 2px solid #111827;
-  border-radius: 24px;
-  padding: 1.3rem;
-  background: #fffaf0;
+/* -------------------------------------------------- */
+/* FOOTER                                              */
+/* -------------------------------------------------- */
+
+.footer {
+  text-align: center;
+  margin-top: var(--space-5);
+  opacity: 0.75;
+  font-size: 0.95rem;
 }
 
-.info-box h3 {
-  margin-bottom: 0.5rem;
-}
-
-.info-box ul {
-  padding-left: 1.2rem;
-  line-height: 1.5;
-}
-
-/* Coming soon */
-.coming-box {
-  background: #fef3c7;
-  border-radius: 24px;
-  border: 2px solid #111827;
-  padding: 1.4rem 1.2rem;
-  margin-bottom: 2.2rem;
-}
-
-.coming-box h3 {
-  margin-bottom: 0.4rem;
-}
-
-.notify-btn {
-  margin-top: 0.8rem;
-  padding: 0.5rem 1.3rem;
-  border-radius: 999px;
-  border: 2px solid #111827;
-  background: #ffffff;
+.footer a {
+  color: var(--mehh-text);
   font-weight: 600;
-  cursor: pointer;
 }
 
-/* Mobil düzen */
-@media (max-width: 700px) {
-  .product-hero {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+/* -------------------------------------------------- */
+/* RESPONSIVE                                          */
+/* -------------------------------------------------- */
 
-  .product-hero-right img {
-    max-width: 220px;
-    transform: translateY(10px);
-  }
-
-  .steps-row {
-    grid-template-columns: 1fr;
-  }
-
-  .info-grid {
-    grid-template-columns: 1fr;
-  }
-}
-/* İskambilname & Sandık Başına hero renkleri */
-.product-hero.hero-isk {
-  background: #8be4b7;   /* mint yeşil */
-}
-
-.product-hero.hero-sandik {
-  background: #ff9c56;   /* turuncu */
-}
-/* ---------------------------------- */
-/* MOBİL DÜZEN (max 720px)            */
-/* ---------------------------------- */
 @media (max-width: 720px) {
 
-  /* Sayfa padding'i biraz azalsın */
-  .page {
-    padding: 1rem 1rem 2rem;
-  }
-
-  /* Navbar üst üste gelsin */
   .navbar {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.4rem;
+    gap: var(--space-2);
   }
 
-  .nav-links {
-    font-size: 0.9rem;
-    gap: 0.75rem;
-  }
-
-  /* Hero ve ürün hero'ları daha kompakt olsun */
-  .hero,
-  .product-hero {
-    padding: 1.5rem 1.25rem;
-    border-radius: 18px;
-  }
-
-  .hero-home,
-  .hero-games,
-  .hero-apps,
-  .hero-experiments {
-    min-height: auto;          /* mobilde “yarım ekran” zorlamasını kaldır */
-  }
-
-  .hero h1,
-  .product-hero-left h1 {
-    font-size: 2rem;           /* başlıklar biraz küçülsün */
-  }
-
-  .hero-subtitle,
-  .product-tagline,
-  .product-desc {
-    font-size: 0.95rem;
-  }
-
-  /* Kart satırları tek kolona düşsün */
-  .cards-row,
-  .games-row,
-  .apps-row,
-  .experiments-row,
-  .steps-row,
-  .info-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .card,
-  .game-box,
-  .app-box,
-  .exp-box,
-  .step-card,
-  .info-box {
-    margin-inline: 0;
+  .nav-links a {
+    margin-left: var(--space-2);
   }
 
   .cards-row {
-    margin-top: 1.5rem;
+    grid-template-columns: 1fr;
   }
 
-  /* Coming soon sayfalarındaki hero resmi ve metni alt alta gelsin */
-  .product-hero {
-    flex-direction: column;
-    text-align: center;
-    gap: 1.25rem;
+  .hero {
+    padding: var(--space-4);
   }
 
-  .hero-right img {
-    width: 220px;
-    max-width: 70vw;
-    top: 10px;       /* taşma biraz azalsın */
-  }
-
-  /* Contact satırı */
-  .contact-inline {
-    margin-top: 2rem;
-    font-size: 0.95rem;
-    padding: 0 0.5rem;
-  }
-
-  .footer {
-    font-size: 0.75rem;
+  .hero h1 {
+    font-size: 1.75rem;
   }
 }

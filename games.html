@@ -1,70 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Games — MEHH</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Games – MEHH</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-<div class="page">
 
-  <!-- NAVBAR -->
-  <header class="navbar">
-    <div class="nav-left">
-      <a href="index.html" class="logo">MEHH</a>
-      <img class="mehh-icon" src="img/mehh-logo.svg" alt="MEHH logo" />
-    </div>
+<div class="container">
 
-    <nav class="nav-links">
-      <a href="games.html">Games</a>
+  <!-- HEADER (INDEX İLE AYNI HİZA, GAMES LİNKİ YOK) -->
+  <header class="header">
+    <img src="img/logo.png" alt="MEHH Logo" class="logo">
+    <nav>
+      <a href="index.html">Home</a>
       <a href="apps.html">Apps</a>
       <a href="experiments.html">Experiments</a>
       <a href="contact.html">Contact</a>
     </nav>
   </header>
 
-  <!-- HERO — GREEN -->
-  <section class="hero hero-green">
-    <h1>Games are MEHH</h1>
-    <p>Silly, chaotic and slightly clever tabletop experiences.</p>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Games are MEHH</h1>
+      <p>
+        Silly, chaotic and slightly clever tabletop experiences.
+      </p>
+    </div>
+
+    <div class="hero-image">
+      <img src="img/hero-games.png" alt="MEHH Games">
+    </div>
   </section>
 
-  <!-- GAME CARDS -->
-  <section class="cards-row">
+  <!-- CARDS -->
+  <section class="cards">
 
-    <a class="card card-yellow" href="yapimci.html">
-      <img class="card-icon" src="img/icon-games.svg" alt="Movie pitching game" />
-      <div class="card-text">
-        <h3>Yapımcı Arıyorum</h3>
-        <p>Pitch wild movie ideas to shark producers.</p>
-      </div>
-    </a>
+    <div class="card games">
+      <img src="img/yapimci.png" alt="Yapımcı Arıyorum">
+      <h3>Yapımcı Arıyorum</h3>
+      <p>
+        Pitch wild movie ideas to slightly unhinged producers.
+      </p>
+      <a href="yapimci.html" class="btn">View Game</a>
+    </div>
 
-    <a class="card card-blue" href="iskambilname.html">
-      <img class="card-icon" src="img/icon-games.svg" alt="Card deck" />
-      <div class="card-text">
-        <h3>İskambilname</h3>
-        <p>25 different games with custom-designed playing cards.</p>
-      </div>
-    </a>
+    <div class="card apps">
+      <img src="img/iskambilname.png" alt="İskambilname">
+      <h3>İskambilname</h3>
+      <p>
+        25 different games using a single custom-designed deck.
+      </p>
+      <a href="iskambilname.html" class="btn">View Game</a>
+    </div>
 
-    <a class="card card-orange" href="sandikbasina.html">
-      <img class="card-icon" src="img/icon-games.svg" alt="Election game" />
-      <div class="card-text">
-        <h3>Sandık Başına</h3>
-        <p>A satirical election game full of chaos and surprises.</p>
-      </div>
-    </a>
+    <div class="card experiments">
+      <img src="img/sandik.png" alt="Sandık Başına">
+      <h3>Sandık Başına</h3>
+      <p>
+        A satirical election game full of chaos and surprises.
+      </p>
+      <a href="sandik.html" class="btn">View Game</a>
+    </div>
 
   </section>
 
-  <!-- FOOTER -->
+  <!-- FOOTER (INDEX İLE AYNI) -->
   <footer class="footer">
-    © 2025 MEHH — lifeismehh.com
+    <p>Ready to collaborate? Let’s create something amazing together.</p>
+    <a href="mailto:hello@lifeismehh.com">hello@lifeismehh.com</a>
+
+    <div class="socials">
+      <a href="https://instagram.com/lifeismehh" target="_blank">
+        <img src="img/instagram.svg" alt="Instagram">
+      </a>
+    </div>
+
+    <div class="copyright">
+      © 2025 MEHH – lifeismehh.com
+    </div>
   </footer>
 
 </div>
+
 </body>
 </html>

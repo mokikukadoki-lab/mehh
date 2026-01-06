@@ -1,0 +1,139 @@
+/* =========================
+   HERO
+========================= */
+
+.experiments-hero {
+  text-align: center;
+  margin-bottom: 96px;
+}
+
+.experiments-hero h1 {
+  margin-bottom: 16px;
+}
+
+.subtitle {
+  font-size: 20px;
+  line-height: 1.5;
+}
+
+/* =========================
+   NOTHING CARD
+========================= */
+
+.nothing-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 72px;
+}
+
+.nothing-card {
+  width: 100%;
+  max-width: 560px;
+  border: 2px solid rgba(0,0,0,0.14);
+  border-radius: 32px;
+  padding: 44px;
+  text-align: center;
+  background: transparent; /* flat */
+}
+
+.nothing-top h2 {
+  font-size: 34px;
+  margin-bottom: 6px;
+}
+
+.for-now {
+  font-size: 14px;
+  opacity: 0.6;
+  margin-bottom: 30px;
+}
+
+.come-back {
+  font-size: 16px;
+}
+
+/* =========================
+   RESERVED FOR
+========================= */
+
+.reserved {
+  text-align: center;
+  margin-bottom: 96px;
+}
+
+.reserved-title {
+  font-size: 18px;
+  margin-bottom: 28px;
+}
+
+/* Kartları “pill” gibi uzatmasın diye:
+   - max-width ile ortalanmış bir grid
+   - kartların min-height’i var
+*/
+.reserved-cards {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.reserved-card {
+  border-radius: 28px;
+  padding: 28px 20px;
+  min-height: 120px;            /* PILL DEĞİL, KART */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+/* COLORS (PALETTE) */
+.reserved-card.green  { background: #B5EAD7; }
+.reserved-card.yellow { background: #FFD97D; }
+.reserved-card.blue   { background: #B9CCED; }
+
+/* =========================
+   BOTTOM LINE
+========================= */
+
+.experiments-footer {
+  text-align: center;
+  margin-bottom: 96px;
+}
+
+.experiments-footer p {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+  .reserved-cards {
+    grid-template-columns: 1fr;
+    max-width: 560px;
+  }
+
+  .nothing-card {
+    padding: 40px 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  .subtitle {
+    font-size: 18px;
+  }
+
+  .nothing-top h2 {
+    font-size: 30px;
+  }
+
+  .reserved-card {
+    min-height: 96px;
+  }
+}

@@ -3,68 +3,89 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Experiments — MEHH</title>
+  <title>Experiments – MEHH</title>
+
+  <!-- GLOBAL (DOKUNULMAZ) -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- PAGE -->
+  <link rel="stylesheet" href="experiments.css" />
 </head>
-
 <body>
-<div class="page">
 
-  <!-- NAVBAR -->
-  <header class="navbar">
-    <div class="nav-left">
-      <a href="index.html" class="logo">MEHH</a>
-      <img class="mehh-icon" src="img/mehh-logo.svg" alt="MEHH logo" />
-    </div>
+<div class="container">
 
-    <nav class="nav-links">
+  <!-- HEADER (INDEX İLE AYNI) -->
+  <header class="header">
+    <img src="img/logo.png" alt="MEHH Logo" class="logo" />
+    <nav>
+      <a href="index.html">Home</a>
       <a href="games.html">Games</a>
       <a href="apps.html">Apps</a>
-      <a href="experiments.html">Experiments</a>
       <a href="contact.html">Contact</a>
     </nav>
   </header>
 
-  <!-- HERO — BLUE -->
-  <section class="hero hero-blue">
+  <!-- HERO -->
+  <section class="experiments-hero">
     <h1>Experiments are MEHH</h1>
-    <p>Weird prototypes, tiny utilities, playful tech ideas.</p>
+    <p class="subtitle">
+      Most of these don’t exist.<br>
+      Some never will.
+    </p>
   </section>
 
-  <!-- EXPERIMENT CARDS -->
-  <section class="cards-row">
-
-    <a class="card card-yellow" href="#">
-      <img class="card-icon" src="img/icon-experiments.svg" alt="Chaos Notes" />
-      <div class="card-text">
-        <h3>Chaos Notes</h3>
-        <p>A note app that rearranges itself.</p>
+  <!-- NOTHING CARD -->
+  <section class="nothing-wrapper">
+    <div class="nothing-card">
+      <div class="nothing-top">
+        <h2>Nothing</h2>
+        <p class="for-now">(for now)</p>
       </div>
-    </a>
 
-    <a class="card card-green" href="#">
-      <img class="card-icon" src="img/icon-experiments.svg" alt="Random Wisdom" />
-      <div class="card-text">
-        <h3>Random Wisdom</h3>
-        <p>Quotes that might help you. Or confuse you.</p>
-      </div>
-    </a>
-
-    <a class="card card-orange" href="#">
-      <img class="card-icon" src="img/icon-experiments.svg" alt="Pixel Monsters" />
-      <div class="card-text">
-        <h3>Pixel Monsters</h3>
-        <p>Tiny creatures that evolve when ignored.</p>
-      </div>
-    </a>
-
+      <p class="come-back">Come back later. Or don’t.</p>
+    </div>
   </section>
 
-  <!-- FOOTER -->
+  <!-- RESERVED -->
+  <section class="reserved">
+    <p class="reserved-title">This space is reserved for:</p>
+
+    <div class="reserved-cards">
+      <div class="reserved-card green">bad ideas</div>
+      <div class="reserved-card yellow">half-built tools</div>
+      <div class="reserved-card blue">things we abandoned politely</div>
+    </div>
+  </section>
+
+  <!-- BOTTOM LINE -->
+  <section class="experiments-footer">
+    <p>
+      Not everything needs to become a product.<br>
+      Some things just need to exist for a while.
+    </p>
+  </section>
+
+  <!-- FOOTER (INDEX İLE AYNI) -->
   <footer class="footer">
-    © 2025 MEHH — lifeismehh.com
+    <p>Ready to collaborate? Let’s create something amazing together.</p>
+    <a href="mailto:hello@lifeismehh.com">hello@lifeismehh.com</a>
+
+    <div class="socials">
+      <a href="https://instagram.com/lifeismehh" target="_blank">
+        <img src="img/instagram.svg" alt="Instagram">
+      </a>
+      <a href="https://x.com/lifeismehh" target="_blank">
+        <img src="img/x.svg" alt="X">
+      </a>
+    </div>
+
+    <div class="copyright">
+      © 2025 MEHH – lifeismehh.com
+    </div>
   </footer>
 
 </div>
+
 </body>
 </html>

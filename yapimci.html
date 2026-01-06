@@ -3,69 +3,134 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Yapımcı Arıyorum — MEHH</title>
+  <title>Yapımcı Arıyorum – MEHH</title>
+
+  <!-- GLOBAL STYLE (INDEX REFERANSI) -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- PAGE STYLE -->
+  <link rel="stylesheet" href="yapimci.css" />
 </head>
-
 <body>
-<div class="page">
 
-  <!-- NAVBAR -->
-  <header class="navbar">
-    <div class="nav-left">
-      <a href="index.html" class="logo">MEHH</a>
-      <img class="mehh-icon" src="img/mehh-logo.svg" alt="MEHH logo" />
-    </div>
+<div class="container">
 
-    <nav class="nav-links">
-      <a href="games.html">Games</a>
+  <!-- HEADER (INDEX İLE AYNI) -->
+  <header class="header">
+    <img src="img/logo.png" alt="MEHH Logo" class="logo" />
+    <nav>
+      <a href="index.html">Home</a>
+          <a href="games.html">Games</a>
       <a href="apps.html">Apps</a>
       <a href="experiments.html">Experiments</a>
       <a href="contact.html">Contact</a>
     </nav>
   </header>
 
+  <!-- HERO -->
+  <section class="hero yapimci-hero">
+    <div class="hero-text">
+      <h1>Yapımcı Arıyorum</h1>
+      <p class="tagline">Sell your story. Survive the industry.</p>
 
-  <!-- HERO — GREEN -->
-  <section class="hero hero-yellow">
-    <h1>Yapımcı Arıyorum</h1>
-    <p>A chaotic film-industry pitching game.</p>
-  </section>
-
-
-  <!-- CONTENT -->
-  <section class="cards-row">
-    <div class="card card-orange">
-      <img class="card-icon" src="img/icon-games.svg" alt="Pitching icon" />
-      <div class="card-text">
-        <h3>Pitch ridiculous movies</h3>
-        <p>Genre + character + twist = pure chaos. Build the weirdest film you can.</p>
-      </div>
+      <p class="intro">
+        There’s a grumpy but wealthy producer at the table.
+        You’re a screenwriter trying to sell a movie idea.
+        Use Genre, Character, and Movie Title cards to pitch the weirdest story imaginable —
+        and convince the producer to fund it.
+      </p>
     </div>
 
-    <div class="card card-green">
-      <img class="card-icon" src="img/icon-experiments.svg" alt="Chaos icon" />
-      <div class="card-text">
-        <h3>Convince the producers</h3>
-        <p>Sell your idea, trash your rivals, survive the shark table.</p>
-      </div>
-    </div>
-
-    <div class="card card-blue">
-      <img class="card-icon" src="img/icon-apps.svg" alt="Box icon" />
-      <div class="card-text">
-        <h3>What’s inside?</h3>
-        <p>Genre cards, character cards, title cards, twists, quick start sheet.</p>
-      </div>
+    <div class="hero-image">
+      <img src="img/yapimci-hero.png" alt="Yapımcı Arıyorum Box Illustration">
     </div>
   </section>
 
+  <!-- QUICK INFO -->
+  <section class="quick-info">
+    <div class="info-item">👥 2–10 Players</div>
+    <div class="info-item">⏱️ 30–60 min</div>
+    <div class="info-item">🎂 Ages 12+</div>
+    <div class="info-item">🎲 Party / Storytelling</div>
+  </section>
 
-  <!-- FOOTER -->
+  <!-- WHAT IS THE GAME -->
+  <section class="content-block">
+    <h2>What Is This Game?</h2>
+    <p>
+      A storytelling party game where one player becomes a moody film producer,
+      and the others are desperate screenwriters.
+      Your goal isn’t to have the best idea —
+      it’s to tell the most convincing story.
+    </p>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="steps">
+    <div class="step-card">
+      <img src="img/step-producer.png" alt="">
+      <p>One player is the producer. Everyone else is a screenwriter.</p>
+    </div>
+
+    <div class="step-card">
+      <img src="img/step-cards.png" alt="">
+      <p>Genre, Character, and Movie Title cards define your pitch.</p>
+    </div>
+
+    <div class="step-card">
+      <img src="img/step-story.png" alt="">
+      <p>The screenwriter creates and tells a full movie story.</p>
+    </div>
+
+    <div class="step-card">
+      <img src="img/step-decision.png" alt="">
+      <p>The producer chooses the story that “smells like money.”</p>
+    </div>
+  </section>
+
+  <!-- WHY IT'S DIFFERENT -->
+  <section class="highlight">
+    <div class="highlight-text">
+      <h2>What Makes It Different?</h2>
+      <p>
+        The producer can interrupt.
+        Other screenwriters can interfere.
+        The more absurd the intervention, the better.
+        This game rewards improvisation, pressure, and chaos —
+        just like the film industry.
+      </p>
+    </div>
+
+    <div class="highlight-image">
+      <img src="img/yapimci-chaos.png" alt="">
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <a href="#" class="cta-btn">Coming Soon</a>
+  </section>
+
+  <!-- FOOTER (INDEX İLE AYNI) -->
   <footer class="footer">
-    © 2025 MEHH — lifeismehh.com
+    <p>Ready to collaborate? Let’s create something amazing together.</p>
+    <a href="mailto:hello@lifeismehh.com">hello@lifeismehh.com</a>
+
+    <div class="socials">
+      <a href="https://instagram.com/lifeismehh" target="_blank">
+        <img src="img/instagram.svg" alt="Instagram">
+      </a>
+      <a href="https://x.com/lifeismehh" target="_blank">
+        <img src="img/x.svg" alt="X">
+      </a>
+    </div>
+
+    <div class="copyright">
+      © 2025 MEHH – lifeismehh.com
+    </div>
   </footer>
 
 </div>
+
 </body>
 </html>

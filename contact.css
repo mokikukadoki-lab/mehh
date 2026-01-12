@@ -35,6 +35,14 @@
   text-align: center;
 }
 
+/* NEW – monster illustration (does NOT affect layout) */
+.contact-illustration {
+  display: block;
+  max-width: 260px;
+  width: 100%;
+  margin: 0 auto 32px;
+}
+
 .contact-line {
   font-size: 16px;
   margin-bottom: 16px;
@@ -89,5 +97,9 @@
 
   .contact-email {
     font-size: 20px;
+  }
+
+  .contact-illustration {
+    max-width: 220px;
   }
 }

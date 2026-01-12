@@ -63,7 +63,7 @@
 /* FEATURE COLORS */
 .feature-card.teal { background: #B5EAD7; }
 .feature-card.yellow { background: #FFD97D; }
-.feature-card.mint { background: #C7F0E2; }
+.feature-card.mint { background: #FF9B71; }
 .feature-card.blue { background: #B9CCED; }
 
 /* KINGS */
@@ -97,7 +97,7 @@
   display: inline-block;
   padding: 16px 48px;
   border-radius: 999px;
-  background: #FF9B71;
+  background: #B9CCED;
   color: #1A2A3A;
   font-weight: 600;
   text-decoration: none;

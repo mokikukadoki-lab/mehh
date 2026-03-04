@@ -124,7 +124,10 @@
   color: #1A2A3A;
   font-weight: 600;
   text-decoration: none;
-  
+  white-space: normal;
+  max-width: 400px;
+  text-align: center;
+
 }
 
 
@@ -187,3 +190,7 @@
     justify-content: center;
   }
 }
+
+@media (max-width: 600px) { .header nav a { margin: 0 3px; font-size: 13px; } }
+
+@media (max-width: 600px) { .cta-btn { font-size: 14px; padding: 12px 16px; } }

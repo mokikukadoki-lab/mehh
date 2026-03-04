@@ -140,3 +140,5 @@
     display: block;
   }
 }
+
+@media (max-width: 600px) { .header nav a { margin: 0 3px; font-size: 13px; } }

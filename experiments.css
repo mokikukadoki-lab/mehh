@@ -94,6 +94,7 @@
 .reserved-card.green  { background: #B5EAD7; }
 .reserved-card.yellow { background: #FFD97D; }
 .reserved-card.blue   { background: #B9CCED; }
+.reserved-card .card-img { display:block; width:100%; height:auto; border-radius:16px; margin:0 auto 14px; }
 
 /* =========================
    BOTTOM LINE

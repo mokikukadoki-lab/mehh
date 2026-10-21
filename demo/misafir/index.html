@@ -1,0 +1,2157 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#2BB34B">
+<title>Misafirler Yolda · Konsept demo</title>
+<style>
+:root{--u:1vh;--green:#2BB34B;--dgreen:#137A33;--black:#000;--white:#fff;--amber:#F5A623;--red:#E5322D;--night:#16213E;--c-teyze:#7B4BA0;--c-adam:#2C3E73;--c-cocuk:#F07B2C;--ink:#111;--cream:#fff;--kraft:var(--green);--navy:#000}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--dgreen);overscroll-behavior:none}
+body{font-family:ui-rounded,"Arial Rounded MT Bold","Trebuchet MS",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;border:0;background:none;touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#app{height:100vh;height:100dvh;display:flex;justify-content:center}
+
+/* ---------- OYUN ALANI ---------- */
+#game{position:relative;width:100%;max-width:430px;height:100%;overflow:hidden;display:grid;
+  --topH:clamp(34px,calc(var(--u)*5.2),48px);--roomH:calc(var(--u)*29.6);--botH:calc(var(--u)*13);
+  --ic:clamp(44px,calc(var(--u)*5.7),48px);--fs:clamp(60px,calc(var(--u)*10),84px);
+  grid-template-rows:var(--topH) var(--roomH) minmax(0,1fr) var(--botH);grid-template-columns:minmax(0,1fr);gap:calc(var(--u)*1.2);
+  padding:calc(var(--u)*1) 8px calc(var(--u)*1 + env(safe-area-inset-bottom,0px));
+  background-color:var(--kraft);
+  background-image:none;
+  background-size:7px 7px,11px 13px,100% 100%;background-position:0 0,4px 6px,0 0;
+  box-shadow:0 0 30px rgba(0,0,0,.5);touch-action:manipulation}
+#game::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(200,30,20,0),rgba(190,20,10,.38));opacity:0;transition:opacity 1.2s;pointer-events:none}
+#game.phase-2::before{opacity:1}
+#topbar,#room,#kitchen,#bottom{position:relative;min-height:0}
+
+/* ---------- VARLIKLAR ---------- */
+.asset{display:inline-block;line-height:1;vertical-align:middle;flex:none;font-style:normal}
+.asset-emoji{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+img.asset{height:1em;width:auto}
+.pick{display:inline-block;line-height:1;transition:transform .09s ease-out}
+.pick.sel{transform:translateY(-6px) scale(1.1);filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 6px #ffd54a)}
+
+/* bardaklar */
+.cup{position:relative;width:.6em;height:.8em;border:.05em solid rgba(40,30,20,.8);border-top-width:.03em;border-radius:.04em .04em .15em .15em;
+  background:linear-gradient(to top,var(--liq) 0 70%,rgba(200,225,240,.7) 70%);box-shadow:inset .07em 0 0 rgba(255,255,255,.45)}
+.cup-cola{--liq:#3b1a0e}.cup-fanta{--liq:#ff8a00}.cup-ayran{--liq:#fffdf3}
+.cup-cola::before,.cup-fanta::before{content:"";position:absolute;right:.1em;top:-.26em;width:.06em;height:.55em;background:#e53935;transform:rotate(14deg);border-radius:.03em}
+.cup-ayran::before{content:"";position:absolute;left:0;right:0;bottom:66%;height:.09em;background:#fff;border-radius:.05em}
+/* şişeler */
+.bottle{position:relative;width:.4em;height:.72em;margin-top:.26em;border-radius:.1em .1em .06em .06em;
+  background:linear-gradient(transparent 32%,var(--lab) 32% 58%,transparent 58%),var(--bc);
+  box-shadow:inset -.06em 0 0 rgba(0,0,0,.25),inset .05em 0 0 rgba(255,255,255,.35),0 .02em .04em rgba(0,0,0,.4)}
+.bottle::before{content:"";position:absolute;left:50%;top:-.2em;width:.17em;height:.22em;margin-left:-.085em;background:var(--bc)}
+.bottle::after{content:"";position:absolute;left:50%;top:-.28em;width:.2em;height:.09em;margin-left:-.1em;background:var(--cap);border-radius:.03em}
+.bottle-cola{--bc:#3b1a0e;--cap:#d62b20;--lab:#d62b20}
+.bottle-fanta{--bc:#ff8a00;--cap:#1f5fbf;--lab:#1f5fbf}
+.bottle-ayran{--bc:#fbfaf3;--cap:#2b7de0;--lab:#2b7de0}
+/* bütün tavuk */
+.chicken{position:relative;width:1.5em;height:1.02em;border-radius:50% 50% 46% 46%;background:var(--chk,#f3dfb5);
+  box-shadow:inset -.12em -.14em 0 rgba(0,0,0,.2),inset .1em .08em 0 rgba(255,255,255,.25)}
+.chicken::before,.chicken::after{content:"";position:absolute;bottom:.06em;width:.42em;height:.3em;background:var(--chk,#f3dfb5);border-radius:50%;box-shadow:inset -.05em -.05em 0 rgba(0,0,0,.2)}
+.chicken::before{left:-.16em;transform:rotate(-25deg)}
+.chicken::after{right:-.16em;transform:rotate(25deg)}
+.chicken-ready{--chk:#b4641f}
+.roast{position:absolute;left:0;top:0;z-index:1;opacity:0}
+.chicken-burnt{--chk:#17120f}
+.spark{position:absolute;right:-.3em;top:-.35em;font-size:.5em;animation:twinkle .45s ease-in-out infinite alternate}
+.puff{position:absolute;left:40%;top:-.2em;width:.35em;height:.35em;border-radius:50%;background:rgba(210,210,210,.85);opacity:0;animation:puff 1.2s linear infinite}
+.puff.p2{left:15%;animation-delay:.4s}.puff.p3{left:65%;animation-delay:.8s}
+@keyframes puff{0%{transform:translate(0,0) scale(.5);opacity:.9}100%{transform:translate(.2em,-1.1em) scale(1.9);opacity:0}}
+@keyframes twinkle{from{opacity:.3;transform:scale(.8)}to{opacity:1;transform:scale(1.2)}}
+/* doğranmış salata */
+.chopped{width:1.35em;height:.78em;border-radius:40%;background:
+  radial-gradient(circle at 18% 35%,#d8342a .09em,transparent .1em),
+  radial-gradient(circle at 38% 72%,#7cb342 .09em,transparent .1em),
+  radial-gradient(circle at 55% 28%,#7cb342 .09em,transparent .1em),
+  radial-gradient(circle at 72% 64%,#d8342a .09em,transparent .1em),
+  radial-gradient(circle at 87% 36%,#7cb342 .08em,transparent .09em),
+  radial-gradient(circle at 28% 55%,#e8e2a0 .07em,transparent .08em),
+  radial-gradient(circle at 63% 47%,#d8342a .08em,transparent .09em),
+  radial-gradient(circle at 46% 52%,#9ccc65 .08em,transparent .09em),
+  radial-gradient(circle at 12% 70%,#9ccc65 .07em,transparent .08em),
+  radial-gradient(circle at 82% 78%,#e8e2a0 .07em,transparent .08em)}
+/* tik */
+.check{position:absolute;right:-.14em;bottom:-.08em;width:.55em;height:.55em;border-radius:50%;background:#2fa84f;box-shadow:0 0 0 .05em #fff}
+.check::after{content:"";position:absolute;left:.19em;top:.07em;width:.13em;height:.26em;border:solid #fff;border-width:0 .07em .07em 0;transform:rotate(45deg)}
+
+/* ---------- ÜST BAR ---------- */
+#topbar{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.paper{background:var(--cream);box-shadow:0 2px 3px rgba(0,0,0,.3);padding:3px 10px;font-weight:900}
+#clock{font-size:clamp(17px,calc(var(--u)*2.9),25px);font-variant-numeric:tabular-nums;rotate:-1.5deg;background:var(--navy);color:#fff;letter-spacing:.04em}
+#hearts{display:flex;gap:2px;min-width:0;font-size:clamp(18px,calc(var(--u)*2.8),24px)}
+#hearts .asset.lost{opacity:.22;filter:grayscale(1)}
+#scoreBox{font-size:clamp(11px,calc(var(--u)*1.9),15px);rotate:1.2deg;display:flex;align-items:baseline;gap:5px;margin-left:auto}
+#score{font-size:clamp(17px,calc(var(--u)*2.7),23px);font-variant-numeric:tabular-nums;min-width:2.1em;text-align:right}
+#muteBtn{position:relative;width:34px;height:34px;flex:none;display:grid;place-items:center;font-size:17px;background:var(--cream);border-radius:50%;box-shadow:0 2px 3px rgba(0,0,0,.3)}
+#muteBtn::after{content:"";position:absolute;inset:-11px}
+
+/* ---------- YEMEK ODASI ---------- */
+#window{position:absolute;left:-8px;right:-8px;top:0;height:clamp(44px,calc(var(--u)*7.2),64px);overflow:hidden;background:linear-gradient(var(--night),#22305a);box-shadow:0 2px 4px rgba(0,0,0,.3)}
+#window svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+#fwLayer{position:absolute;inset:0}
+.fwp{position:absolute;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%}
+#seats{position:absolute;inset:0;display:flex;gap:6px}
+.seat{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:2px;border-radius:10px}
+.armed .seat{z-index:60;box-shadow:0 0 0 3px #ffe066;background:rgba(255,236,160,.14)}
+.armed .seat::after{content:"";position:absolute;inset:0;border-radius:10px;box-shadow:0 0 22px 6px rgba(255,224,102,.95);animation:glow .7s ease-in-out infinite alternate;pointer-events:none}
+@keyframes glow{from{opacity:.3}to{opacity:1}}
+.tk-wrap{width:100%;flex:1;min-height:0;display:flex}
+.ticket{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;padding:6px 6px 7px;rotate:var(--r,0deg);
+  background:#fff;background-image:repeating-linear-gradient(#fff 0 13px,#eef2ef 13px 14px);box-shadow:0 3px 8px rgba(0,40,10,.3);transition:opacity .35s}
+.ticket.eating{box-shadow:0 0 0 2px #ffd54a,0 2px 4px rgba(0,0,0,.35)}
+.ticket.gone{opacity:0}
+.ticket::after{content:"";position:absolute;inset:0;background:rgba(229,50,45,.38);opacity:0;pointer-events:none}
+.ticket.urgent{animation:tkShake .5s ease-in-out infinite}
+.ticket.urgent::after{opacity:1;animation:blink .45s steps(2,start) infinite}
+@keyframes tkShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px) rotate(-1deg)}75%{transform:translateX(2px) rotate(1deg)}}
+.titems{flex:1;min-height:0;display:grid;grid-template-columns:repeat(2,var(--ic));grid-auto-rows:var(--ic);gap:4px;justify-content:center;align-content:center;font-size:var(--ic)}
+.titem{position:relative;width:var(--ic);height:var(--ic);display:grid;place-items:center}
+.titem:only-child,.titem:nth-child(3):last-child{grid-column:1 / -1;justify-self:center}
+.titem .cup,.tslot .cup{font-size:1.3em}
+.titem .check{font-size:1.45em;left:50%;top:50%;right:auto;bottom:auto;margin:-.275em 0 0 -.275em}
+.titem.done>.asset:first-child{opacity:.35}
+.titem.pop .check{animation:pop .35s ease-out}
+@keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.4)}100%{transform:scale(1)}}
+.pbar{flex:none;height:12px;margin-top:5px;background:rgba(0,0,0,.15);border-radius:6px;overflow:hidden}
+.pfill{height:100%;width:100%;transform-origin:0 50%;background:var(--green);border-radius:6px}
+.pfill.y{background:var(--amber)}
+.pfill.r{background:var(--red);animation:blink .45s steps(2,start) infinite}
+@keyframes blink{50%{opacity:.25}}
+.g-wrap{position:relative;flex:none;font-size:var(--fs);width:1.1em;height:.78em}
+.g-slot{position:absolute;inset:0}
+.g-crop{position:absolute;inset:0;overflow:hidden}
+.guest{position:absolute;left:0;right:0;top:0;text-align:center;line-height:1}
+.gface{display:inline-block;transition:transform .12s ease-out}
+.guest.smile .gface{transform:scale(1.12)}
+/* kağıt kesiği figürler (1em = figür boyu; 390 genişlikte kafa ≈ 44px) */
+.fig{position:relative;display:inline-block;vertical-align:bottom;width:1em;height:1em;rotate:var(--fr,-1.5deg)}
+.fig i{position:absolute;display:block}
+.fig .bd{left:.06em;right:.06em;bottom:-.14em;height:.52em;border-radius:50% 50% 14% 14% / 72% 72% 14% 14%;background:var(--shirt);box-shadow:0 0 0 .018em rgba(255,255,255,.7),0 .025em .05em rgba(0,0,0,.3),inset 0 -.05em 0 rgba(0,0,0,.12)}
+.fig .hd{left:50%;top:.13em;width:.52em;height:.52em;margin-left:-.26em;border-radius:50%;background:#f0c49b;box-shadow:0 .02em .045em rgba(0,0,0,.32)}
+.fig .ey{left:.14em;top:.205em;width:.05em;height:.05em;border-radius:50%;background:#2a1d12;box-shadow:.19em 0 0 #2a1d12}
+.fig .mo{left:50%;top:.32em;width:.13em;height:.055em;margin-left:-.065em;border-bottom:.02em solid #7a3526;border-radius:0 0 50% 50%;transition:transform .15s ease-out}
+.guest.sad .mo{transform:translateY(.035em) rotate(180deg)}
+.fig .hr{left:50%;top:.1em;width:.56em;height:.2em;margin-left:-.28em;background:var(--hair);border-radius:50% 50% 16% 16% / 100% 100% 16% 16%;box-shadow:0 .015em .03em rgba(0,0,0,.25)}
+.fig-teyze{--shirt:var(--c-teyze);--hair:#b8b4ad;--fr:-2deg}
+.fig-teyze .bd::before{content:"";position:absolute;left:50%;top:0;width:.16em;height:.26em;margin-left:-.08em;background:#f4ead2;clip-path:polygon(0 0,100% 0,50% 100%)}
+.fig-teyze .bn{left:50%;top:.01em;width:.21em;height:.18em;margin-left:-.105em;border-radius:50%;background:#a9a59e;box-shadow:0 .015em .03em rgba(0,0,0,.25)}
+.fig-teyze .gl{left:.095em;top:.16em;width:.14em;height:.14em;border:.016em solid #3a2e28;border-radius:50%}
+.fig-teyze .gl::after{content:"";position:absolute;left:.174em;top:-.016em;width:.14em;height:.14em;border:.016em solid #3a2e28;border-radius:50%}
+.fig-teyze .gl::before{content:"";position:absolute;left:.124em;top:.047em;width:.05em;height:.016em;background:#3a2e28}
+.fig-adam{--shirt:var(--c-adam);--hair:#1f1a17;--fr:1.5deg}
+.fig-adam .hr{top:.11em;height:.17em}
+.fig-adam .bd::before{content:"";position:absolute;left:50%;top:.01em;width:.28em;height:.07em;margin-left:-.14em;border-radius:50%;background:rgba(0,0,0,.28)}
+.fig-cocuk{--shirt:var(--c-cocuk);--hair:#5a3418;--fr:-1deg}
+.fig-cocuk .pt{left:.73em;top:.15em;width:.16em;height:.32em;border-radius:50% 50% 50% 50% / 40% 40% 60% 60%;background:var(--hair);rotate:28deg;box-shadow:0 .015em .03em rgba(0,0,0,.25)}
+.guest.arrive{animation:arrive .45s cubic-bezier(.2,.9,.3,1.25)}
+.guest.leave{animation:leave .4s .45s ease-in forwards}
+@keyframes arrive{from{transform:translateY(70%);opacity:0}to{transform:none;opacity:1}}
+@keyframes leave{to{transform:translateY(80%);opacity:0}}
+.bubble{position:absolute;left:50%;bottom:92%;transform:translate(-50%,0);background:#fff;color:var(--ink);font-size:13px;font-weight:900;padding:4px 8px;border-radius:12px;white-space:nowrap;box-shadow:0 2px 3px rgba(0,0,0,.3);opacity:0;z-index:5;pointer-events:none}
+.bubble.angry{background:var(--red);color:#fff}
+.bubble.show{animation:bubble .9s forwards}
+@keyframes bubble{0%{opacity:0;transform:translate(-50%,6px) scale(.7)}25%{opacity:1;transform:translate(-50%,0) scale(1.08)}40%{transform:translate(-50%,0) scale(1)}100%{opacity:1;transform:translate(-50%,-6px) scale(1)}}
+
+/* ---------- MUTFAK ---------- */
+#kitchen{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr);gap:16px 8px;padding-top:8px}
+.kcol{display:contents}
+#oven{grid-area:1 / 1}#board{grid-area:1 / 2}#plate{grid-area:2 / 1}#fridge{grid-area:2 / 2}
+.station{position:relative;min-height:0;rotate:var(--r,0deg);border-radius:6px;background:var(--white);box-shadow:0 4px 10px rgba(0,50,15,.28)}
+.tape{position:absolute;top:-9px;left:10px;z-index:4;background:var(--dgreen);color:#fff;font-weight:900;font-size:11px;letter-spacing:.08em;padding:2px 8px;rotate:-3deg;box-shadow:0 1px 2px rgba(0,0,0,.28);pointer-events:none;white-space:nowrap}
+.tape::after{content:"";position:absolute;top:-5px;left:50%;width:24px;height:10px;margin-left:-12px;background:rgba(255,255,240,.55);transform:rotate(5deg);box-shadow:0 0 1px rgba(0,0,0,.15)}
+.tape.small{left:50%;transform:translateX(-50%);padding:2px 6px;font-size:10px}
+.oven-door{position:absolute;inset:16px 8px 8px 8px;background:#3a2118;border-radius:10px;box-shadow:inset 0 0 0 4px #d9c29a,inset 0 0 0 6px #3a2118;overflow:hidden;display:grid;place-items:center;container-type:size}
+.oven-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 72%,rgba(255,140,40,.7),transparent 66%);opacity:0;transition:opacity .3s}
+#oven.cooking .oven-glow{opacity:1}
+#oven.ready .oven-glow{opacity:1;animation:glow .45s ease-in-out infinite alternate}
+.ghost{display:inline-block;opacity:.25;filter:grayscale(1)}
+.oven-empty{position:relative;display:grid;place-items:center}
+.oven-empty .asset{opacity:.25}
+.plus{position:absolute;left:50%;top:50%;transform:translate(-50%,-54%);font-size:.72em;font-weight:900;line-height:1;color:#f6ecd4;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+#ovenFood{position:relative;z-index:1;font-size:40px;font-size:min(34cqw,52cqh);line-height:1}
+.ring{position:absolute;left:50%;top:50%;width:80%;width:min(86cqw,90cqh);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;z-index:0;opacity:0;
+  background:conic-gradient(var(--rc,#ffb300) calc(var(--p,0)*360deg),rgba(255,255,255,.14) 0)}
+.ring::after{content:"";position:absolute;inset:9%;border-radius:50%;background:#3a2118}
+#oven.cooking .ring,#oven.ready .ring{opacity:1}
+.ready-tag,.burnt-tag{position:absolute;left:50%;bottom:14px;z-index:3;font-weight:900;font-size:12px;padding:2px 8px;border-radius:3px;opacity:0;transform:translateX(-50%) rotate(-3deg);pointer-events:none}
+.ready-tag{background:#ffe066;color:var(--ink)}
+.burnt-tag{background:#e2332b;color:#fff}
+#oven.ready .ready-tag{opacity:1}
+#oven.burnt .burnt-tag{opacity:1;animation:blink .5s steps(2,start) infinite}
+#oven.burnt .oven-door::after{content:"";position:absolute;inset:0;border-radius:10px;box-shadow:inset 0 0 0 4px #ff2b1c;animation:blink .5s steps(2,start) infinite}
+.dish{position:absolute;left:4%;right:4%;top:22px;bottom:12px;border-radius:50%;
+  background:radial-gradient(#fff 52%,#e7e2d6 54%,#fff 62%,#d4cdbd 100%);box-shadow:0 3px 4px rgba(0,0,0,.3);
+  display:flex;align-items:center;justify-content:center;container-type:inline-size;font-size:44px}
+.pslot{flex:none;width:44px;height:44px;display:grid;place-items:center}
+.pslot+.pslot{margin-left:clamp(-6px,calc((100cqw - 176px) / 3),5px)}
+.badge{position:absolute;top:5px;right:6px;z-index:3;isolation:isolate;background:var(--navy);color:#fff;font-weight:900;font-size:12px;padding:2px 7px;border-radius:8px;font-variant-numeric:tabular-nums}
+.badge.alert{animation:alertScale .7s}
+.badge.alert::after{content:"";position:absolute;inset:0;border-radius:inherit;background:#e2332b;z-index:-1;animation:blink .25s steps(2,start) 3}
+@keyframes alertScale{0%,100%{transform:scale(1)}20%,60%{transform:scale(1.4)}40%,80%{transform:scale(1.1)}}
+.cboard{position:absolute;left:6%;right:15%;top:18px;bottom:22px;background:#d9a066;border-radius:8px;box-shadow:inset 0 -4px 0 #b77f47,0 2px 3px rgba(0,0,0,.3);display:grid;place-items:center;container-type:size}
+#boardFood{font-size:36px;font-size:min(30cqw,62cqh);line-height:1}
+.prog{position:absolute;left:16%;right:16%;bottom:7px;display:flex;gap:4px}
+.prog i{flex:1;height:7px;border-radius:3px;background:rgba(0,0,0,.28)}
+.prog i.on{background:var(--green)}
+.cboard::after{content:"";position:absolute;right:-17px;top:50%;width:20px;height:28px;margin-top:-14px;background:#d9a066;border-radius:0 13px 13px 0;box-shadow:inset 0 -3px 0 #b77f47}
+.cboard::before{content:"";position:absolute;right:-11px;top:50%;width:7px;height:12px;margin-top:-6px;border-radius:4px;background:var(--white);z-index:1}
+.badge.hide{opacity:0}
+#fridge{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(0,1fr);gap:0;padding:12px 0 0;container-type:size}
+.fbtn{min-height:64px;min-width:0;display:grid;place-items:center;font-size:52px;font-size:min(46cqw,56cqh);background:#eef3ef;background-clip:padding-box;border:4px solid transparent;border-radius:10px}
+
+/* ---------- ALT SATIR ---------- */
+#bottom{display:grid;grid-template-columns:minmax(0,1fr) 60px auto;gap:8px;align-items:center;padding-top:6px}
+#tray{height:100%;display:flex;align-items:stretch;gap:4px;padding:12px 6px 6px}
+.tslot{flex:1;min-width:56px;min-height:56px;display:grid;place-items:center;border:2px dashed rgba(0,0,0,.18);border-radius:8px;background:#f3f6f4;font-size:var(--ic)}
+#trash{height:100%;min-height:56px;display:grid;place-items:center;font-size:clamp(26px,calc(var(--u)*4.4),38px)}
+#trash.urge{animation:trashBeat .8s ease-in-out infinite}
+#trash::after{content:"";position:absolute;inset:-3px;border-radius:4px;box-shadow:0 0 0 3px #ffe066,0 0 18px 5px rgba(255,210,60,.95);opacity:0;pointer-events:none}
+#trash.urge::after{animation:urgeGlow .8s ease-in-out infinite}
+@keyframes trashBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+@keyframes urgeGlow{0%,100%{opacity:.1}50%{opacity:1}}
+#joker{position:relative;z-index:3;width:clamp(64px,calc(var(--u)*10),84px);aspect-ratio:1;border-radius:50%;background:var(--green);border:4px solid #fff;
+  box-shadow:0 4px 0 var(--dgreen),0 6px 10px rgba(0,0,0,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;font-weight:900;color:#fff;transition:opacity .3s}
+#joker::before{content:"";position:absolute;inset:-8px;border-radius:50%;pointer-events:none;background:conic-gradient(#fff calc(var(--jc,1)*360deg),rgba(0,0,0,.25) 0);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px))}
+#joker .jk-icon{font-size:22px;color:#fff;margin-bottom:2px}
+#joker .jk-t{font-size:12px;letter-spacing:-.01em;white-space:nowrap}
+#joker.charging .jk-icon,#joker.charging .jk-t{opacity:.5}
+#joker.ready{animation:beat 1.3s ease-in-out infinite}
+#joker.armed{z-index:60;box-shadow:0 0 0 4px #fff,0 0 22px 8px rgba(255,255,255,.9)}
+.scooter-svg{display:inline-block;width:1.35em;height:1em;vertical-align:middle}
+.scooter-svg svg{display:block;width:100%;height:100%}
+@keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.13)}30%{transform:scale(1)}45%{transform:scale(1.07)}}
+
+/* ---------- KATMANLAR ---------- */
+#dim{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:50;transition:opacity .12s}
+.armed #dim{opacity:.4}
+.ending #dim{opacity:.35;transition:opacity .4s}
+#fx{position:absolute;inset:0;pointer-events:none;z-index:70;overflow:hidden}
+.fly{position:absolute;line-height:1;will-change:transform}
+.crumb{position:absolute;width:6px;height:5px;border-radius:1px}
+.float{position:absolute;left:0;top:0;font-weight:900;font-size:20px;color:var(--dgreen);text-shadow:0 1px 0 #fff,0 0 4px #fff;white-space:nowrap;will-change:transform,opacity}
+.float.neg{color:var(--red)}
+.float.big{font-size:32px;color:var(--navy)}
+.banner{position:absolute;left:0;top:42%;width:100%;text-align:center;background:var(--cream);color:var(--red);font-weight:900;font-size:clamp(21px,calc(var(--u)*3.8),34px);padding:10px 0;box-shadow:0 4px 8px rgba(0,0,0,.35);white-space:nowrap}
+.banner::before,.banner::after{content:"";position:absolute;top:-6px;width:46px;height:16px;background:rgba(255,255,240,.6);box-shadow:0 0 1px rgba(0,0,0,.2)}
+.banner::before{left:12%;transform:rotate(-8deg)}.banner::after{right:12%;transform:rotate(7deg)}
+.scooter{position:absolute;left:0;top:0;font-size:58px;line-height:1;white-space:nowrap;color:var(--green);filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
+.scooter .asset{transform:scaleX(var(--flip,1))}
+.speed{display:inline-block;width:60px;height:4px;margin-left:-4px;vertical-align:middle;background:linear-gradient(90deg,transparent,rgba(255,255,255,.9));border-radius:2px;order:-1}
+/* öğretici: %70 karartma + spot ışığı + kağıt etiket */
+#tutSpot{position:absolute;left:0;top:0;z-index:66;display:none;border-radius:14px;pointer-events:none;box-shadow:0 0 0 3000px rgba(0,0,0,.7);will-change:transform}
+#tutSpot::after{content:"";position:absolute;inset:-3px;border-radius:inherit;border:3px solid #ffe066;box-shadow:0 0 18px 4px rgba(255,224,102,.85);animation:tutPulse 1s ease-in-out infinite}
+#tutSpot.wait::after{animation:none;opacity:.45}
+@keyframes tutPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.06);opacity:.5}}
+#tutLabel{position:absolute;left:0;top:0;z-index:78;display:none;pointer-events:none;will-change:transform}
+#tutLabel span{display:block;background:var(--cream);color:var(--ink);font-weight:900;font-size:clamp(20px,calc(var(--u)*3),27px);line-height:1.15;padding:9px 16px;white-space:normal;max-width:310px;text-align:center;box-shadow:0 5px 12px rgba(0,0,0,.5);rotate:-2deg}
+#tutLabel span::before{content:"";position:absolute;top:-8px;left:50%;width:44px;height:16px;margin-left:-22px;background:rgba(255,255,240,.65);transform:rotate(4deg);box-shadow:0 0 1px rgba(0,0,0,.2)}
+#countdown{position:absolute;left:0;right:0;top:8%;text-align:center;font-size:clamp(64px,calc(var(--u)*13),120px);font-weight:900;color:#fff;
+  text-shadow:0 4px 0 #c62828,0 0 22px rgba(0,0,0,.45);pointer-events:none;z-index:65;opacity:0;line-height:1}
+#countdown.show{opacity:.88}
+#fwCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:80;opacity:0;transition:opacity .4s}
+#fwCanvas.show{opacity:1}
+#endMsg{position:absolute;left:6%;right:6%;top:36%;z-index:85;text-align:center;background:var(--cream);padding:16px 12px;font-weight:900;box-shadow:0 6px 14px rgba(0,0,0,.4);rotate:-2deg;opacity:0;transform:scale(.6);transition:opacity .25s,transform .4s cubic-bezier(.2,1.4,.4,1);pointer-events:none}
+#endMsg.show{opacity:1;transform:scale(1)}
+.em-big{font-size:clamp(32px,calc(var(--u)*6),52px);color:var(--black);line-height:1.05}
+.em-sub{display:inline-block;margin-top:8px;background:var(--amber);padding:4px 10px;font-size:18px;rotate:1.5deg}
+.em-lose{font-size:clamp(22px,calc(var(--u)*3.8),32px);color:var(--ink);line-height:1.2}
+
+/* ---------- EKRANLAR ---------- */
+.screen{position:absolute;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*1.7);padding:20px 18px;text-align:center;
+  background-color:var(--kraft);background-image:inherit;background-size:inherit;opacity:0;pointer-events:none;transition:opacity .4s}
+.screen.show{opacity:1;pointer-events:auto}
+.btn{min-height:56px;padding:0 28px;font-weight:900;font-size:19px;letter-spacing:.03em;background:var(--black);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.35),0 7px 12px rgba(0,0,0,.25);rotate:-1deg;border-radius:6px}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.35),0 3px 6px rgba(0,0,0,.25)}
+.btn.big{min-height:64px;font-size:23px;padding:0 36px}
+.btn.alt{background:#fff;color:var(--black);box-shadow:0 4px 0 rgba(0,0,0,.25),0 7px 12px rgba(0,0,0,.2);rotate:1deg}
+.st-deco{display:flex;gap:14px;font-size:64px;padding-bottom:10px}
+.st-title{display:flex;flex-direction:column;align-items:center;gap:6px}
+.st-title span{display:inline-block;background:var(--black);color:#fff;font-size:clamp(34px,calc(var(--u)*6.4),54px);line-height:1.05;padding:6px 16px;box-shadow:0 4px 8px rgba(0,0,0,.3)}
+.st-title span:nth-child(1){rotate:-2.5deg}.st-title span:nth-child(2){rotate:2deg;background:#fff;color:var(--black)}
+.st-sub{max-width:300px;font-size:17px;font-weight:800;line-height:1.35;background:var(--cream);padding:10px 14px;rotate:.8deg;box-shadow:0 2px 4px rgba(0,0,0,.25)}
+.st-brand{font-size:13px;font-weight:800;line-height:1.35;color:#fff;max-width:290px}
+.res-title{font-size:clamp(22px,calc(var(--u)*3.9),34px);font-weight:900;line-height:1.15;background:var(--cream);padding:8px 14px;rotate:-1.5deg;box-shadow:0 3px 6px rgba(0,0,0,.25);max-width:100%}
+.res-sub{background:var(--amber);padding:4px 12px;font-weight:900;font-size:16px;rotate:1.5deg;box-shadow:0 2px 4px rgba(0,0,0,.25)}
+.res-stats{display:grid;grid-template-columns:1fr auto;gap:3px 18px;background:#fff;padding:9px 16px;font-size:15px;font-weight:700;min-width:240px;text-align:left;box-shadow:0 2px 4px rgba(0,0,0,.2);rotate:.5deg}
+.res-stats b{text-align:right;font-variant-numeric:tabular-nums}
+.res-stats .full{grid-column:1 / -1;margin-top:5px;padding-top:6px;border-top:2px solid #eef2ef;color:var(--dgreen);font-weight:900}
+.res-tag{font-size:clamp(26px,calc(var(--u)*4.6),40px);font-weight:900;color:var(--navy);line-height:1.1}
+.coupon{position:relative;background:#fff;border:2px dashed var(--dgreen);padding:10px 16px;rotate:1deg;box-shadow:0 3px 6px rgba(0,0,0,.25);min-width:250px}
+.cp-brand{font-size:12px;font-weight:900;letter-spacing:.15em;color:var(--dgreen)}
+.cp-text{font-size:15px;font-weight:900;margin:3px 0}
+.cp-code{font-size:14px;font-weight:800}
+.cp-code b{font-size:20px;letter-spacing:.02em;color:var(--navy)}
+.res-btns{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:2px}
+#toast{position:absolute;left:50%;bottom:12%;z-index:120;transform:translate(-50%,20px);background:var(--navy);color:#fff;padding:11px 18px;border-radius:22px;font-weight:800;font-size:15px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#debug{position:absolute;left:4px;bottom:4px;z-index:130;background:rgba(0,0,0,.78);color:#8f8;font:10px/1.3 ui-monospace,Menlo,monospace;padding:4px 6px;white-space:pre;pointer-events:none;max-width:97%;overflow:hidden;display:none}
+/* ---------- MASAÜSTÜ KARŞILAMA ---------- */
+#phone{display:contents}
+#side{display:none}
+body.desktop{background:var(--dgreen);background-image:radial-gradient(ellipse at 30% 40%,rgba(43,179,75,.45),transparent 60%)}
+body.desktop #app{align-items:center;gap:clamp(40px,6vw,96px);padding:0 32px}
+body.desktop #phone{--ph:min(844px,calc(100vh - 72px));display:block;flex:none;width:calc(var(--ph)*.4621 + 24px);height:calc(var(--ph) + 24px);padding:12px;border-radius:52px;background:#151011;box-shadow:0 0 0 2px #3d3431,0 30px 60px rgba(0,0,0,.55)}
+body.desktop #game{max-width:none;border-radius:40px;box-shadow:none}
+body.desktop #side{display:flex;flex-direction:column;align-items:flex-start;gap:26px;max-width:430px;color:var(--cream)}
+.sd-title{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.sd-title span{display:inline-block;background:var(--black);color:#fff;font-size:clamp(40px,4.2vw,62px);line-height:1.05;padding:6px 18px;box-shadow:0 4px 10px rgba(0,0,0,.35);rotate:-2deg}
+.sd-title span:nth-child(2){background:#fff;color:var(--black);rotate:1.5deg;margin-left:22px}
+.sd-desc{font-size:20px;font-weight:800;line-height:1.4;max-width:400px}
+.sd-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--cream);color:var(--ink);padding:18px 18px 14px;rotate:-1.5deg;box-shadow:0 6px 14px rgba(0,0,0,.4)}
+.sd-card::before{content:"";position:absolute;top:-9px;left:50%;width:70px;height:18px;margin-left:-35px;background:rgba(255,255,240,.6);transform:rotate(3deg);box-shadow:0 0 1px rgba(0,0,0,.2)}
+#sdQr svg{display:block;width:210px;height:210px}
+.sd-scan{font-size:19px;font-weight:900}
+/* ---------- geri bildirim ---------- */
+#clock.late{background:var(--red)}
+#clock.pulse{animation:clockPulse .5s ease-in-out infinite}
+@keyframes clockPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.hbubble{position:absolute;left:-14px;right:-14px;top:-8px;z-index:6;text-align:center;pointer-events:none;font-size:13px;line-height:1}
+.hbubble span{display:inline-block;background:var(--red);color:#fff;font-size:13px;font-weight:900;padding:3px 8px;border-radius:10px;white-space:nowrap;box-shadow:0 2px 4px rgba(0,0,0,.3);opacity:0;transform:scale(.4);transform-origin:50% 100%;transition:opacity .15s,transform .25s cubic-bezier(.2,1.5,.4,1)}
+.hbubble.show span{opacity:1;transform:scale(1)}
+#holdMsg{position:absolute;left:8%;right:8%;top:38%;z-index:86;text-align:center;background:#fff;padding:20px 12px;font-weight:900;font-size:clamp(22px,calc(var(--u)*3.6),30px);line-height:1.25;box-shadow:0 8px 18px rgba(0,0,0,.4);rotate:-1.5deg;opacity:0;transform:scale(.6);transition:opacity .2s,transform .35s cubic-bezier(.2,1.4,.4,1);pointer-events:none}
+#holdMsg.show{opacity:1;transform:scale(1)}
+#holdMsg b{display:block;color:var(--red);font-size:1.25em;margin-top:4px}
+.holding #dim{opacity:.45}
+/* sürükle-bırak */
+.tslot,#plate{touch-action:none}
+.drag-ghost{position:absolute;left:0;top:0;z-index:74;pointer-events:none;line-height:1;filter:drop-shadow(0 8px 8px rgba(0,0,0,.35));will-change:transform}
+.drag-ghost .cup{font-size:1.3em}
+.pick.dragging{opacity:.25}
+.drop-over{outline:4px solid #fff;outline-offset:-3px}
+/* öğretici kapanış kartı */
+#tutCard{position:absolute;inset:0;z-index:90;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.7)}
+#tutCard.show{display:flex}
+.tc-box{background:#fff;padding:24px 20px 22px;text-align:center;rotate:-1.5deg;box-shadow:0 10px 24px rgba(0,0,0,.45);display:flex;flex-direction:column;align-items:center;gap:20px;max-width:320px}
+.tc-text{font-size:clamp(20px,calc(var(--u)*2.9),24px);font-weight:900;line-height:1.3}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="phone">
+<div id="game" class="phase-0">
+
+  <header id="topbar">
+    <div id="clock" class="paper">23:00</div>
+    <div id="hearts"></div>
+    <div id="scoreBox" class="paper"><span id="scoreLabel"></span><b id="score">0</b></div>
+    <button id="muteBtn" data-act="mute" aria-label="Ses"></button>
+  </header>
+
+  <section id="room">
+    <div id="window">
+      <svg viewBox="0 0 400 130" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <g fill="#fff" opacity=".85">
+          <circle cx="30" cy="14" r="1"/><circle cx="72" cy="30" r=".8"/><circle cx="118" cy="10" r="1.2"/><circle cx="160" cy="26" r=".7"/>
+          <circle cx="205" cy="12" r="1"/><circle cx="248" cy="34" r=".8"/><circle cx="290" cy="16" r="1.1"/><circle cx="378" cy="30" r=".9"/>
+          <circle cx="12" cy="40" r=".7"/><circle cx="182" cy="44" r=".6"/><circle cx="92" cy="50" r=".6"/><circle cx="226" cy="54" r=".6"/>
+        </g>
+        <circle cx="335" cy="26" r="11" fill="#f6ecc8"/><circle cx="340" cy="23" r="10" fill="#0d1a44"/>
+        <path fill="#0b1535" d="M0 100 Q40 88 80 95 T160 92 T240 96 T320 90 T400 94 V130 H0Z"/>
+        <g fill="#060c22">
+          <rect x="22" y="62" width="12" height="38"/><path d="M20 62 L28 45 L36 62Z"/>
+          <rect x="0" y="84" width="62" height="16"/><rect x="40" y="76" width="14" height="10"/><rect x="4" y="78" width="12" height="8"/>
+          <rect x="88" y="44" width="3.5" height="52"/><path d="M87.5 44 L89.75 33 L92 44Z"/>
+          <rect x="148.5" y="44" width="3.5" height="52"/><path d="M148 44 L150.25 33 L152.5 44Z"/>
+          <path d="M96 90 Q96 65 120 63 Q144 65 144 90Z"/><rect x="119" y="54" width="2" height="10"/>
+          <path d="M93 93 Q94 80 104 79 Q113 80 113 93Z"/><path d="M127 93 Q127 80 136 79 Q146 80 147 93Z"/>
+          <rect x="84" y="88" width="72" height="12"/>
+          <rect x="156" y="82" width="32" height="18"/><rect x="170" y="73" width="10" height="10"/>
+        </g>
+        <rect x="0" y="99" width="400" height="31" fill="#0f2250"/>
+        <g stroke="#f3d27a" stroke-width=".8" opacity=".45">
+          <line x1="18" y1="106" x2="52" y2="106"/><line x1="96" y1="110" x2="140" y2="110"/><line x1="226" y1="104" x2="262" y2="104"/><line x1="300" y1="112" x2="350" y2="112"/>
+        </g>
+        <rect x="262" y="58" width="5" height="42" fill="#0a1332"/><rect x="352" y="58" width="5" height="42" fill="#0a1332"/>
+        <path d="M198 92 Q240 87 264 60 Q310 93 354 60 Q380 84 402 90" stroke="#f3d27a" stroke-width="1.2" fill="none"/>
+        <g stroke="#f3d27a" stroke-width=".5" opacity=".6">
+          <line x1="280" y1="72" x2="280" y2="91"/><line x1="295" y1="79" x2="295" y2="91"/><line x1="310" y1="81" x2="310" y2="91"/>
+          <line x1="325" y1="79" x2="325" y2="91"/><line x1="340" y1="72" x2="340" y2="91"/>
+        </g>
+        <rect x="194" y="91" width="212" height="3" fill="#0a1332"/>
+        <g fill="#ffd66b">
+          <circle cx="204" cy="92.5" r=".9"/><circle cx="220" cy="92.5" r=".9"/><circle cx="236" cy="92.5" r=".9"/><circle cx="252" cy="92.5" r=".9"/>
+          <circle cx="276" cy="92.5" r=".9"/><circle cx="292" cy="92.5" r=".9"/><circle cx="308" cy="92.5" r=".9"/><circle cx="324" cy="92.5" r=".9"/>
+          <circle cx="340" cy="92.5" r=".9"/><circle cx="368" cy="92.5" r=".9"/><circle cx="384" cy="92.5" r=".9"/>
+        </g>
+      </svg>
+      <div id="fwLayer"></div>
+    </div>
+    <div id="seats"></div>
+  </section>
+
+  <section id="kitchen">
+    <div class="kcol left">
+      <div id="oven" class="station empty" data-act="oven" data-tilt>
+        <span class="tape" data-label="oven"></span>
+        <div class="oven-door"><div class="oven-glow"></div><div class="ring" id="ovenRing"></div><div id="ovenFood"></div></div>
+        <div class="ready-tag" id="ovenTag"></div>
+        <div class="burnt-tag" id="burntTag"></div>
+      </div>
+      <div id="plate" class="station" data-act="plate" data-tilt>
+        <span class="tape" data-label="plate"></span>
+        <div class="dish" id="dish"></div>
+        <div class="badge" id="plateBadge">0/4</div>
+      </div>
+    </div>
+    <div class="kcol right">
+      <div id="board" class="station" data-act="salad" data-tilt>
+        <span class="tape" data-label="salad"></span>
+        <div class="cboard"><div id="boardFood"></div></div>
+        <div class="prog" id="saladProg"></div>
+        <div class="badge hide" id="saladBadge"></div>
+      </div>
+      <div id="fridge" class="station" data-tilt>
+        <span class="tape" data-label="fridge"></span>
+        <button class="fbtn" data-act="bottle" data-drink="cola" aria-label="Kola"></button>
+        <button class="fbtn" data-act="bottle" data-drink="fanta" aria-label="Fanta"></button>
+        <button class="fbtn ayran" data-act="bottle" data-drink="ayran" aria-label="Ayran"></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="bottom">
+    <div id="tray" class="station" data-tilt>
+      <span class="tape" data-label="ready"></span>
+    </div>
+    <div id="trash" class="station" data-act="trash" data-tilt>
+      <span class="tape small" data-label="trash"></span>
+      <span id="trashIcon"></span>
+    </div>
+    <button id="joker" class="locked" data-act="joker" aria-label="Hızlı sipariş ver"></button>
+  </section>
+
+  <div id="dim"></div>
+  <div id="tutSpot"></div>
+  <div id="tutLabel"><span></span></div>
+  <div id="holdMsg"></div>
+  <div id="tutCard" data-act="tutStart"><div class="tc-box"><div class="tc-text" id="tcText"></div><button class="btn big" data-act="tutStart" id="tcBtn"></button></div></div>
+  <div id="fx"></div>
+  <div id="countdown"></div>
+  <canvas id="fwCanvas"></canvas>
+  <div id="endMsg"></div>
+
+  <div id="startScreen" class="screen show">
+    <div class="st-deco" id="stDeco"></div>
+    <h1 class="st-title" id="stTitle"></h1>
+    <p class="st-sub" id="stSub"></p>
+    <button class="btn big" data-act="start" id="stBtn"></button>
+    <div class="st-brand" id="stBrand"></div>
+  </div>
+
+  <div id="resultScreen" class="screen">
+    <div class="res-title" id="resTitle"></div>
+    <div class="res-sub" id="resSub"></div>
+    <div class="res-stats" id="resStats"></div>
+    <div class="res-tag" id="resTag"></div>
+    <div class="coupon">
+      <div class="cp-brand" id="cpBrand"></div>
+      <div class="cp-text" id="cpText"></div>
+      <div class="cp-code"><span id="cpCodeLabel"></span> <b id="cpCode"></b></div>
+    </div>
+    <div class="res-btns">
+      <button class="btn big" data-act="order" id="orderBtn"></button>
+      <button class="btn big alt" data-act="replay" id="replayBtn"></button>
+    </div>
+  </div>
+
+  <div id="pauseScreen" class="screen">
+    <div class="res-title" id="pauseTitle"></div>
+    <button class="btn big" data-act="resume" id="resumeBtn"></button>
+  </div>
+
+  <div id="toast"></div>
+  <div id="debug"></div>
+</div>
+</div>
+<aside id="side">
+  <h1 class="sd-title" id="sdTitle"></h1>
+  <p class="sd-desc" id="sdDesc"></p>
+  <div class="sd-card"><div id="sdQr"></div><div class="sd-scan" id="sdScan"></div></div>
+</aside>
+</div>
+
+<script>
+(() => {
+'use strict';
+
+/* =====================================================================
+   CONFIG — tüm ayarlar burada
+   ===================================================================== */
+const CONFIG = {
+  BRAND: '[MARKA]',
+  COLORS: {
+    green: '#2BB34B',      // ana yeşil (fon)
+    darkGreen: '#137A33',  // gölgeler, kenarlar
+    black: '#000000',      // saat, ana buton
+    white: '#FFFFFF',      // istasyon kartları, fişler, ikinci buton
+    amber: '#F5A623',      // acıkıyor
+    red: '#E5322D',        // aç, yanık
+    night: '#16213E',      // pencere şeridi
+    teyze: '#7B4BA0', adam: '#2C3E73', cocuk: '#F07B2C',   // misafir kıyafetleri
+  },
+  text: {
+    gameName: 'MİSAFİRLER YOLDA',
+    conceptLine: '{brand} için yılbaşı kampanya konsepti',
+    subtitle: 'Yılbaşı gecesi. Gece yarısına bir saat var. Herkesi doyur.',
+    start: 'BAŞLA',
+    score: 'SKOR',
+    winTitle: 'MUTLU YILLAR!',
+    perfectTitle: 'KUSURSUZ EV SAHİBİ',
+    loseTitle: 'Misafirler aç kaldı.',
+    tagline: 'Bu sene sen uğraşma.',
+    jokerSaved: '{brand} seni bu gece {n} kez kurtardı.',
+    couponDiscount: 'YILBAŞI SİPARİŞİNE [İndirim] İNDİRİM',
+    couponCodeLabel: '',
+    couponCode: '[Kampanya kodu burada]',
+    orderBtn: 'SİPARİŞ VER',
+    replayBtn: 'TEKRAR OYNA',
+    orderToast: 'Demo: burada uygulama açılır',
+    full: 'Doydum!',
+    angry: 'Aç kaldı 😠',
+    jokerLabel: '{brand}',
+    hungry: 'Acıktım!',
+    heartLost: '{name} aç kaldı! ♥ -1',
+    guestNames: { teyze: 'Teyze', adam: 'Adam', cocuk: 'Çocuk', default: 'Misafir' },
+    ovenReady: 'HAZIR',
+    ovenBurnt: 'YANDI!',
+    paused: 'DURAKLATILDI',
+    resume: 'DEVAM',
+    statFed: 'Doyurulan misafir',
+    statServed: 'Servis edilen ürün',
+    statTaps: 'Toplam dokunuş',
+    statScore: 'Skor',
+    desktopDesc: 'Yılbaşı gecesi misafirler yolda: gece yarısına kadar herkesi doyurabilecek misin?',
+    scanToPlay: 'Telefonunla okut, oyna',
+    tutorial: {
+      tapDrink: { cola: 'Kolaya dokun', fanta: 'Fantaya dokun', ayran: 'Ayrana dokun' },
+      pickCup: 'Bardağa dokun',
+      giveTo: { teyze: 'Servis için teyzeye dokun', adam: 'Servis için adama dokun', cocuk: 'Servis için çocuğa dokun' },
+      tapOven: 'Fırına dokun', cooking: 'Tavuk pişiyor…', takeChicken: 'Tavuğa dokun', pickDrum: 'Buta dokun',
+      tapBoard: 'Tahtaya {n} kez dokun', pickSalad: 'Salataya dokun',
+      pickAny: 'Birine dokun', toTrash: 'Çöpe dokun',
+      joker: "Zor durumda kalırsan {brand}'e dokun.",
+      card: 'Misafirler acıkmadan servis et. Gece yarısına kadar dayan!',
+      cardBtn: 'BAŞLA',
+    },
+    labels: { oven: 'FIRIN', plate: 'TABAK', salad: 'SALATA', fridge: 'DOLAP', ready: 'HAZIR', trash: 'ÇÖP' },
+  },
+  game: {
+    duration: 90,                  // gerçek saniye
+    clockStartHour: 23,
+    phaseStarts: [0, 30, 67.5],    // SAKİN / KALABALIK / ÇILGIN
+    phaseNames: ['SAKİN', 'KALABALIK', 'ÇILGIN'],
+    hearts: 3,
+    seatCount: 3,
+    introDrinkOnlyUntil: 12,       // bu saniyeye kadar: sadece içecek, 1 ürün
+    intro: [
+      { t: 0, seat: 0, type: 'teyze' },
+      { t: 4, seat: 1, type: 'adam' },
+      { t: 8, seat: 2, type: 'cocuk' },
+    ],
+    countdownFrom: 10,
+  },
+  oven: {
+    cookTime: 8,
+    readyTime: [4, 4, 3],          // aşamaya göre yanma süresi
+    warnBefore: 1,
+    drumsPerChicken: 4,
+  },
+  salad: { minTapGapMs: 300, taps: 3 },
+  tray: { slots: 3 },
+  drinks: ['cola', 'fanta', 'ayran'],
+  guestTypes: ['teyze', 'adam', 'cocuk'],
+  guests: {
+    teyze: { asset: 'guestTeyze', patience: [30, 24, 20], rounds: [2, 3], maxDrum: 1,
+             weights: { salad: 0.4, ayran: 0.3, drum: 0.2, cola: 0.05, fanta: 0.05 } },
+    adam:  { asset: 'guestAdam',  patience: [24, 19, 17], rounds: [4, 5], maxDrum: 2,
+             weights: { drum: 0.6, cola: 0.1, fanta: 0.1, ayran: 0.1, salad: 0.1 } },
+    cocuk: { asset: 'guestCocuk', patience: [18, 15, 13], rounds: [3, 4], maxDrum: 1,
+             weights: { cola: 0.25, fanta: 0.25, ayran: 0.25, drum: 0.2, salad: 0.05 } },
+  },
+  orderSize: [[1, 2], [2, 3], [2, 3]],
+  maxOrderItems: 3,
+  patienceJitter: 0.15,
+  easyPatienceMultiplier: 1.5,
+  eatTime: 1.5,
+  leaveTime: 0.9,
+  respawnDelay: 1,
+  noDoubleLeaveWindow: 5,
+  smileTime: 0.7,
+  joker: { rechargeSec: 40, scooterMs: 1200 },   // başta dolu; kullanılınca 40 sn'de dolar
+  hold: { firstHeart: 1.5 },                     // ilk kalp kaybında oyun durur
+  tutorial: { script: ['ayran', 'drum', 'cola'] }, // öğreticide teyze / adam / çocuğun ilk siparişi
+  score: { item: 10, bonusMax: 50, burnt: -20, trash: -5 },
+  thresholds: { green: 0.55, yellow: 0.25 },   // sabır barı ve ruh hali
+  end: { winHold: 2, perfectHold: 3, loseHold: 1.8 },
+  desktop: { minWidth: 768 },
+  fx: { flyMs: 250, windowFwMinMs: 1400, windowFwMaxMs: 4200, flipScooter: false },
+};
+
+/* =====================================================================
+   ASSETS — tüm görseller. Emoji: {emoji}, CSS: {css, html}, dosya: {src}
+   ===================================================================== */
+const ASSETS = {
+  drum:           { emoji: '🍗' },
+  salad:          { emoji: '🥗' },
+  cola:           { css: 'cup cup-cola' },
+  fanta:          { css: 'cup cup-fanta' },
+  ayran:          { css: 'cup cup-ayran' },
+  bottleCola:     { css: 'bottle bottle-cola' },
+  bottleFanta:    { css: 'bottle bottle-fanta' },
+  bottleAyran:    { css: 'bottle bottle-ayran' },
+  chickenGhost:   { css: 'chicken' },
+  chickenCooking: { css: 'chicken', html: '<span class="chicken chicken-ready roast"></span>' },
+  chickenReady:   { css: 'chicken chicken-ready', html: '<i class="spark asset-emoji">✨</i>' },
+  chickenBurnt:   { css: 'chicken chicken-burnt', html: '<i class="puff"></i><i class="puff p2"></i><i class="puff p3"></i>' },
+  saladStage1:    { emoji: '🥒🍅' },
+  saladStage2:    { css: 'chopped' },
+  saladStage3:    { emoji: '🥗' },
+  guestTeyze:     { css: 'fig fig-teyze', html: '<i class="bn"></i><i class="bd"></i><i class="hd"><i class="ey"></i><i class="gl"></i><i class="mo"></i></i><i class="hr"></i>' },
+  guestAdam:      { css: 'fig fig-adam',   html: '<i class="bd"></i><i class="hd"><i class="ey"></i><i class="mo"></i></i><i class="hr"></i>' },
+  guestCocuk:     { css: 'fig fig-cocuk',  html: '<i class="pt"></i><i class="bd"></i><i class="hd"><i class="ey"></i><i class="mo"></i></i><i class="hr"></i>' },
+  heart:          { emoji: '❤️' },
+  trash:          { emoji: '🗑️' },
+  scooter:        { css: 'scooter-svg', html: '<svg viewBox="0 0 54 40" aria-hidden="true"><rect x="2" y="4" width="17" height="14" rx="2.5" fill="currentColor"/><path d="M6 28c0-6 4-9 10-9h14l4 9z" fill="currentColor"/><path d="M17 29h21" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M36 29l6-18h6" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="32" r="6" fill="#111"/><circle cx="11" cy="32" r="2.2" fill="#ddd"/><circle cx="44" cy="32" r="6" fill="#111"/><circle cx="44" cy="32" r="2.2" fill="#ddd"/></svg>' },
+  check:          { css: 'check' },
+  soundOn:        { emoji: '🔊' },
+  soundOff:       { emoji: '🔇' },
+};
+const BOTTLE_ASSET = { cola: 'bottleCola', fanta: 'bottleFanta', ayran: 'bottleAyran' };
+const SALAD_STAGE_ASSET = [null, 'saladStage1', 'saladStage2', 'saladStage3'];
+
+/** Tüm görsel çizim bu fonksiyondan geçer. */
+function asset(key, cls) {
+  const a = ASSETS[key];
+  if (!a) return '';
+  const c = cls ? ' ' + cls : '';
+  if (a.src) return `<img class="asset${c}" src="${a.src}" alt="" draggable="false">`;
+  if (a.emoji) return `<span class="asset asset-emoji${c}">${a.emoji}</span>`;
+  return `<span class="asset ${a.css}${c}">${a.html || ''}</span>`;
+}
+
+/* =====================================================================
+   YARDIMCILAR
+   ===================================================================== */
+const params = new URLSearchParams(location.search);
+const DEBUG = params.get('debug') === '1';
+const EASY = params.get('easy') === '1';
+const rand = (a, b) => a + Math.random() * (b - a);
+const randInt = (a, b) => Math.floor(a + Math.random() * (b - a + 1));
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const pad2 = n => String(n).padStart(2, '0');
+const clamp01 = x => (x < 0 ? 0 : x > 1 ? 1 : x);
+function weightedPick(w) {
+  let total = 0;
+  for (const k in w) total += w[k];
+  let r = Math.random() * total, last = null;
+  for (const k in w) { last = k; r -= w[k]; if (r <= 0) return k; }
+  return last;
+}
+function tiltFor(seed) {
+  const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+  return ((x - Math.floor(x)) * 3 - 1.5).toFixed(2);
+}
+function clockText(t) {
+  const m = Math.floor(t / CONFIG.game.duration * 60);
+  const h = CONFIG.game.clockStartHour;
+  if (m >= 60) return pad2((h + 1) % 24) + ':00';
+  return pad2(h) + ':' + pad2(Math.max(0, m));
+}
+function phaseAt(t) {
+  const p = CONFIG.game.phaseStarts;
+  return t >= p[2] ? 2 : t >= p[1] ? 1 : 0;
+}
+
+/* =====================================================================
+   SES — Web Audio, dosyasız
+   ===================================================================== */
+const Sound = {
+  ctx: null, master: null, muted: false, nbuf: null, primed: false,
+  /** touchend / pointerup / click gibi gerçek kullanıcı hareketlerinde çağrılır (iOS + Android). */
+  unlock() {
+    if (this.muted || document.hidden) return;          // sessizdeyken hiçbir şey açılmaz
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    try { if (navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; } catch (e) {}
+    if (!this.ctx) {
+      try {
+        this.ctx = new AC();
+        this.master = this.ctx.createGain();
+        this.master.gain.value = this.muted ? 0 : 0.55;
+        this.master.connect(this.ctx.destination);
+      } catch (e) { this.ctx = null; return; }
+    }
+    if (this.ctx.state !== 'running') {
+      const p = this.ctx.resume();
+      if (p && p.catch) p.catch(() => {});
+    }
+    if (!this.primed || this.ctx.state !== 'running') {
+      try {                                             // sessiz 1 örneklik buffer: iOS kilidini açar
+        const b = this.ctx.createBuffer(1, 1, 22050), src = this.ctx.createBufferSource();
+        src.buffer = b; src.connect(this.ctx.destination); src.start(0);
+        this.primed = true;
+      } catch (e) {}
+    }
+  },
+  resumeIfAllowed() {
+    if (!this.ctx || this.muted || document.hidden || this.ctx.state === 'running') return;
+    const p = this.ctx.resume();
+    if (p && p.catch) p.catch(() => {});
+  },
+  setMuted(m) { this.muted = m; if (this.master) this.master.gain.value = m ? 0 : 0.55; },
+  tone(freq, dur, o) {
+    o = o || {};
+    const c = this.ctx; if (!c) return;
+    const t0 = c.currentTime + (o.delay || 0);
+    const osc = c.createOscillator(), g = c.createGain();
+    osc.type = o.type || 'sine';
+    osc.frequency.setValueAtTime(freq, t0);
+    if (o.slide) osc.frequency.exponentialRampToValueAtTime(o.slide, t0 + dur);
+    const vol = o.vol || 0.2, att = Math.min(0.01, dur / 3);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol, t0 + att);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(g); g.connect(this.master);
+    osc.start(t0); osc.stop(t0 + dur + 0.03);
+  },
+  noise(dur, o) {
+    o = o || {};
+    const c = this.ctx; if (!c) return;
+    if (!this.nbuf) {
+      const len = c.sampleRate;
+      const b = c.createBuffer(1, len, c.sampleRate), d = b.getChannelData(0);
+      for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+      this.nbuf = b;
+    }
+    const t0 = c.currentTime + (o.delay || 0);
+    const s = c.createBufferSource(); s.buffer = this.nbuf;
+    const f = c.createBiquadFilter(); f.type = o.type || 'lowpass'; f.frequency.value = o.freq || 1000; f.Q.value = o.q || 1;
+    const g = c.createGain();
+    g.gain.setValueAtTime(o.vol || 0.3, t0);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    s.connect(f); f.connect(g); g.connect(this.master);
+    s.start(t0); s.stop(t0 + dur + 0.03);
+  },
+  play(name) {
+    if (!this.ctx || this.muted || this.ctx.state !== 'running') return;
+    const T = (f, d, o) => this.tone(f, d, o), N = (d, o) => this.noise(d, o);
+    switch (name) {
+      case 'tik':      T(1900, .05, { type: 'triangle', vol: .22 }); T(2800, .04, { vol: .08, delay: .012 }); break;
+      case 'select':   T(900, .06, { type: 'triangle', vol: .16, slide: 1300 }); break;
+      case 'deselect': T(1100, .06, { type: 'triangle', vol: .12, slide: 750 }); break;
+      case 'ding':     T(1319, .35, { vol: .28 }); T(1976, .3, { vol: .12, delay: .025 }); break;
+      case 'bzzt':     T(110, .18, { type: 'sawtooth', vol: .16 }); T(117, .18, { type: 'square', vol: .08 }); break;
+      case 'soft':     T(220, .07, { type: 'triangle', vol: .12 }); break;
+      case 'cin':      T(2093, .7, { vol: .2 }); T(3136, .55, { vol: .1, delay: .02 }); T(4186, .35, { vol: .05, delay: .04 }); break;
+      case 'bipbip':   T(1046, .07, { type: 'square', vol: .12 }); T(1046, .07, { type: 'square', vol: .12, delay: .13 }); break;
+      case 'burn':     N(.5, { vol: .25, freq: 500 }); T(260, .45, { type: 'sawtooth', vol: .12, slide: 90 }); break;
+      case 'dingdong': T(784, .5, { vol: .22 }); T(622, .7, { vol: .22, delay: .32 }); break;
+      case 'pof':      N(.16, { vol: .35, freq: 700 }); T(160, .12, { vol: .15, slide: 60 }); break;
+      case 'patlama':  N(.7, { vol: .35, freq: 1200 }); T(90, .35, { vol: .25, slide: 40 }); break;
+      case 'chop':     N(.05, { vol: .3, freq: 2800, type: 'bandpass', q: 1.5 }); T(600, .04, { type: 'triangle', vol: .08 }); break;
+      case 'ovenIn':   N(.12, { vol: .2, freq: 400 }); T(180, .12, { type: 'triangle', vol: .12, slide: 120 }); break;
+      case 'plate':    T(700, .08, { type: 'triangle', vol: .15 }); T(1050, .12, { type: 'triangle', vol: .12, delay: .06 }); break;
+      case 'complete': T(1047, .14, { vol: .18 }); T(1319, .14, { vol: .18, delay: .08 }); T(1568, .3, { vol: .2, delay: .16 }); break;
+      case 'paper':    N(.08, { vol: .12, freq: 3500, type: 'highpass' }); break;
+      case 'happy':    T(880, .12, { type: 'triangle', vol: .15 }); T(1175, .2, { type: 'triangle', vol: .15, delay: .1 }); break;
+      case 'angry':    T(330, .35, { type: 'square', vol: .12, slide: 140 }); break;
+      case 'hungry':   T(784, .09, { type: 'triangle', vol: .16 }); T(587, .16, { type: 'triangle', vol: .16, delay: .09 }); break;
+      case 'heart':    T(196, .4, { type: 'triangle', vol: .2, slide: 98 }); break;
+      case 'swish':    N(.35, { vol: .2, freq: 1800, type: 'bandpass', q: .8 }); break;
+      case 'unlock':   T(660, .1, { type: 'triangle', vol: .14 }); T(990, .18, { type: 'triangle', vol: .14, delay: .08 }); break;
+      case 'vroom':    T(80, 1.1, { type: 'sawtooth', vol: .14, slide: 320 }); N(.9, { vol: .08, freq: 300 }); break;
+      case 'tick':     T(1500, .03, { type: 'square', vol: .07 }); break;
+      case 'lose':     T(392, .25, { type: 'triangle', vol: .18 }); T(330, .25, { type: 'triangle', vol: .18, delay: .22 }); T(262, .5, { type: 'triangle', vol: .18, delay: .44 }); break;
+    }
+  },
+};
+
+/* =====================================================================
+   OYUN DURUMU (STATE) — çizimden bağımsız
+   ===================================================================== */
+let S = null;
+let guestSeq = 0;
+
+function newState(mode) {
+  return {
+    mode,                   // start | play | ending | result
+    t: 0, paused: false, phase: 0,
+    hearts: CONFIG.game.hearts, score: 0,
+    oven: { state: 'empty', timer: 0, readyTotal: 1, warned: false },   // empty | cooking | ready | burnt
+    plate: 0,
+    salad: { stage: 0, lastTapMs: -1e9 },
+    tray: new Array(CONFIG.tray.slots).fill(null),
+    selection: null,        // {src:'plate'} | {src:'tray', idx}
+    seats: Array.from({ length: CONFIG.game.seatCount }, () => ({ guest: null, respawnAt: null })),
+    spawnQueue: CONFIG.game.intro.map(x => Object.assign({}, x)),
+    lastLeaveT: -1e9,
+    joker: { charge: 1, armed: false },
+    hold: 0, holdText: '',
+    stats: { fed: 0, served: 0, taps: 0, jokers: 0 },
+    tut: null,
+    endKind: null, endTimer: 0, perfect: false, endClock: '',
+    events: [],
+  };
+}
+function fx(type, data) { S.events.push(Object.assign({ type }, data || {})); }
+
+/* ---------- seçim ---------- */
+function selectedItem() {
+  const s = S.selection;
+  if (!s) return null;
+  if (s.src === 'plate') return S.plate > 0 ? 'drum' : null;
+  return S.tray[s.idx] || null;
+}
+function isSelected(src, idx) {
+  const s = S.selection;
+  return !!s && s.src === src && (src === 'plate' || s.idx === idx);
+}
+function consumeSelected() {
+  const s = S.selection;
+  let from;
+  if (s.src === 'plate') { S.plate--; from = { src: 'plate', idx: S.plate }; }
+  else { S.tray[s.idx] = null; from = { src: 'tray', idx: s.idx }; }
+  S.selection = null;
+  return from;
+}
+const freeTraySlot = () => S.tray.indexOf(null);
+
+function addScore(delta, anchor, big) {
+  if (!delta) return;
+  S.score = Math.max(0, S.score + delta);
+  fx('float', { text: (delta > 0 ? '+' : '') + delta, anchor, neg: delta < 0, big: !!big });
+}
+
+/* ---------- misafirler ---------- */
+function makeOrder(g) {
+  const cfg = CONFIG.guests[g.type];
+  const intro = S.t < CONFIG.game.introDrinkOnlyUntil;
+  let size;
+  if (intro) size = 1;
+  else { const r = CONFIG.orderSize[S.phase]; size = randInt(r[0], r[1]); }
+  size = Math.min(size, CONFIG.maxOrderItems);
+  const pool = {};
+  for (const k in cfg.weights) if (!intro || CONFIG.drinks.includes(k)) pool[k] = cfg.weights[k];
+  const items = [];
+  let drums = 0;
+  for (let i = 0; i < size; i++) {
+    if (!Object.keys(pool).length) break;
+    const it = weightedPick(pool);
+    items.push(it);
+    if (it === 'drum') { drums++; if (drums >= cfg.maxDrum) delete pool.drum; }
+    else delete pool[it];
+  }
+  g.order = items.map(item => ({ item, done: false, doneAt: -9 }));
+  const jitter = 1 + rand(-CONFIG.patienceJitter, CONFIG.patienceJitter);
+  const p = cfg.patience[S.phase] * jitter * (EASY ? CONFIG.easyPatienceMultiplier : 1);
+  g.patience = g.patienceMax = p;
+  g.status = 'waiting';
+  g.timer = 0;
+  g.hungry = false;
+}
+function seatGuest(i, type) {
+  const cfg = CONFIG.guests[type];
+  const g = { id: ++guestSeq, type, roundsTotal: randInt(cfg.rounds[0], cfg.rounds[1]), roundsDone: 0,
+              order: [], patience: 1, patienceMax: 1, status: 'waiting', timer: 0, smile: 0, leaveReason: null };
+  S.seats[i].guest = g;
+  S.seats[i].respawnAt = null;
+  makeOrder(g);
+  fx('arrive', { seat: i });
+}
+function guestLeave(i, reason) {
+  const seat = S.seats[i], g = seat.guest;
+  g.status = 'leaving';
+  g.leaveReason = reason;
+  g.timer = CONFIG.leaveTime;
+  seat.respawnAt = S.t + CONFIG.respawnDelay;
+  S.lastLeaveT = S.t;
+  if (reason === 'full') { S.stats.fed++; fx('full', { seat: i }); }
+  else { fx('angry', { seat: i }); loseHeart(g.type); }
+}
+function completeOrder(i, full) {
+  const g = S.seats[i].guest;
+  const ratio = full ? 1 : clamp01(g.patience / g.patienceMax);
+  const bonus = Math.round(ratio * CONFIG.score.bonusMax);
+  g.roundsDone++;
+  g.status = 'eating';
+  g.timer = CONFIG.eatTime;
+  fx('complete', { seat: i, bonus });
+  addScore(bonus, { seat: i }, true);
+}
+function afterEating(i) {
+  const g = S.seats[i].guest;
+  if (g.roundsDone >= g.roundsTotal) {
+    if (S.t - S.lastLeaveT < CONFIG.noDoubleLeaveWindow) {
+      g.roundsTotal++;                          // aynı anda kalkmama kuralı
+      makeOrder(g);
+      fx('order', { seat: i });
+    } else guestLeave(i, 'full');
+  } else {
+    makeOrder(g);
+    fx('order', { seat: i });
+  }
+}
+function loseHeart(type) {
+  if (S.hearts <= 0) return;
+  S.hearts--;
+  fx('heart', { idx: S.hearts });
+  if (S.hearts <= 0) { endGame('lose'); return; }
+  const T = CONFIG.text;
+  const msg = T.heartLost.replace('{name}', T.guestNames[type] || T.guestNames.default);
+  if (S.hearts === CONFIG.game.hearts - 1) { S.hold = CONFIG.hold.firstHeart; S.holdText = msg; }   // ilk kayıp: kısa duraklama
+  else fx('heartBand', { text: msg });
+}
+
+/* ---------- oyuncu eylemleri ---------- */
+function actOven() {
+  const o = S.oven;
+  switch (o.state) {
+    case 'empty':
+      o.state = 'cooking'; o.timer = CONFIG.oven.cookTime; o.warned = false;
+      fx('ovenIn'); break;
+    case 'cooking':
+      fx('ovenBusy'); break;
+    case 'ready':
+      if (S.plate === 0) { S.plate = CONFIG.oven.drumsPerChicken; o.state = 'empty'; o.timer = 0; fx('ovenToPlate'); }
+      else fx('plateBlocked');
+      break;
+    case 'burnt':
+      o.state = 'empty'; o.timer = 0;
+      addScore(CONFIG.score.burnt, 'oven');
+      fx('clean'); break;
+  }
+}
+function actPlate() {
+  if (S.plate <= 0) { fx('nudge', { target: 'plate' }); return; }
+  if (isSelected('plate')) { S.selection = null; fx('deselect'); }
+  else { S.selection = { src: 'plate' }; fx('select'); }
+}
+function actTray(i) {
+  if (!S.tray[i]) return;
+  if (isSelected('tray', i)) { S.selection = null; fx('deselect'); }
+  else { S.selection = { src: 'tray', idx: i }; fx('select'); }
+}
+function actSalad() {
+  const now = performance.now();
+  if (now - S.salad.lastTapMs < CONFIG.salad.minTapGapMs) return;
+  S.salad.lastTapMs = now;
+  const st = S.salad.stage;
+  if (st < CONFIG.salad.taps - 1) { S.salad.stage = st + 1; fx('salad', { stage: st + 1 }); return; }
+  const slot = freeTraySlot();
+  if (slot < 0) { fx('trayFull'); return; }
+  S.tray[slot] = 'salad';
+  S.salad.stage = 0;
+  fx('saladDone', { slot });
+}
+function actBottle(drink) {
+  const slot = freeTraySlot();
+  if (slot < 0) { fx('trayFull'); return; }
+  S.tray[slot] = drink;
+  fx('bottle', { drink, slot });
+}
+function actTrash() {
+  const item = selectedItem();
+  if (!item) { fx('nudge', { target: 'trash' }); return; }
+  const from = consumeSelected();
+  fx('trash', { item, from });
+  addScore(CONFIG.score.trash, 'trash');
+}
+function actGuest(i) {
+  const g = S.seats[i].guest;
+  if (S.joker.armed) {
+    if (!g || g.status !== 'waiting') { fx('wrong', { seat: i }); return; }
+    useJoker(i);
+    return;
+  }
+  let item = selectedItem();
+  if (!item) {                                   // otomatik servis: önce tepsi, sonra tabak
+    if (!g || g.status !== 'waiting') return;
+    const need = g.order.filter(o => !o.done).map(o => o.item);
+    const k = S.tray.findIndex(x => x && need.includes(x));
+    if (k >= 0) S.selection = { src: 'tray', idx: k };
+    else if (S.plate > 0 && need.includes('drum')) S.selection = { src: 'plate' };
+    else return;
+    item = selectedItem();
+  }
+  if (!g || g.status !== 'waiting') { fx('wrong', { seat: i }); return; }
+  const entry = g.order.find(o => !o.done && o.item === item);
+  if (!entry) { fx('wrong', { seat: i }); return; }
+  const from = consumeSelected();
+  entry.done = true; entry.doneAt = S.t;
+  S.stats.served++;
+  g.smile = CONFIG.smileTime;
+  fx('deliver', { seat: i, item, from });
+  addScore(CONFIG.score.item, { seat: i });
+  if (g.order.every(o => o.done)) completeOrder(i, false);
+}
+function actJoker() {
+  if (S.joker.charge < 1) { fx('jokerDenied'); return; }
+  S.joker.armed = !S.joker.armed;
+  fx(S.joker.armed ? 'jokerArm' : 'jokerDisarm');
+}
+function useJoker(i) {
+  const g = S.seats[i].guest;
+  S.joker.charge = 0;
+  S.joker.armed = false;
+  S.stats.jokers++;
+  let n = 0;
+  g.order.forEach(o => { if (!o.done) { o.done = true; o.doneAt = S.t; n++; } });
+  S.stats.served += n;
+  fx('joker', { seat: i });
+  addScore(n * CONFIG.score.item, { seat: i });
+  completeOrder(i, true);
+}
+
+/* ---------- güncelleme ---------- */
+function updateOven(dt, frozen) {
+  const o = S.oven;
+  if (frozen && o.state !== 'cooking') return;
+  if (o.state === 'cooking') {
+    o.timer -= dt;
+    if (o.timer <= 0) {
+      o.state = 'ready';
+      o.readyTotal = o.timer = CONFIG.oven.readyTime[S.phase];
+      o.warned = false;
+      fx('ovenReady');
+    }
+  } else if (o.state === 'ready') {
+    o.timer -= dt;
+    if (!o.warned && o.timer <= CONFIG.oven.warnBefore) { o.warned = true; fx('ovenWarn'); }
+    if (o.timer <= 0) { o.state = 'burnt'; o.timer = 0; fx('burnt'); }
+  }
+}
+function updateSeat(i, dt, frozen) {
+  const seat = S.seats[i], g = seat.guest;
+  if (!g) {
+    if (!frozen && seat.respawnAt !== null && S.t >= seat.respawnAt) seatGuest(i, pick(CONFIG.guestTypes));
+    return;
+  }
+  if (g.smile > 0) g.smile = Math.max(0, g.smile - dt);
+  if (g.status === 'waiting') {
+    if (frozen) return;
+    g.patience -= dt;
+    if (!g.hungry && g.patience / g.patienceMax <= CONFIG.thresholds.yellow) { g.hungry = true; fx('hungry', { seat: i }); }
+    if (g.patience <= 0) { g.patience = 0; guestLeave(i, 'angry'); }
+  } else if (g.status === 'eating') {
+    g.timer -= dt;
+    if (g.timer <= 0) afterEating(i);
+  } else if (g.status === 'leaving') {
+    g.timer -= dt;
+    if (g.timer <= 0) seat.guest = null;
+  }
+}
+function update(dt) {
+  if (S.mode !== 'play' || S.paused) return;
+  if (S.hold > 0) { S.hold = Math.max(0, S.hold - dt); return; }   // ilk kalp kaybı duraklaması
+  tutUpdate();
+  const frozen = tutFrozen();
+  if (!frozen) {
+    S.t += dt;
+    const ph = phaseAt(S.t);
+    if (ph !== S.phase) { S.phase = ph; fx('phase', { phase: ph }); }
+    while (S.spawnQueue.length && S.t >= S.spawnQueue[0].t) {
+      const s = S.spawnQueue.shift();
+      if (!S.seats[s.seat].guest) seatGuest(s.seat, s.type);
+    }
+    if (S.joker.charge < 1) {
+      S.joker.charge = Math.min(1, S.joker.charge + dt / CONFIG.joker.rechargeSec);
+      if (S.joker.charge >= 1) fx('jokerUnlock');
+    }
+  }
+  updateOven(dt, frozen);
+  for (let i = 0; i < S.seats.length; i++) {
+    updateSeat(i, dt, frozen);
+    if (S.mode !== 'play') return;
+  }
+  if (S.selection && !selectedItem()) S.selection = null;
+  if (S.t >= CONFIG.game.duration) { S.t = CONFIG.game.duration; endGame('win'); }
+}
+function endGame(kind) {
+  if (S.mode !== 'play') return;
+  S.mode = 'ending';
+  S.endKind = kind;
+  S.perfect = kind === 'win' && S.hearts === CONFIG.game.hearts;
+  S.endClock = clockText(S.t);
+  S.endTimer = kind === 'win' ? (S.perfect ? CONFIG.end.perfectHold : CONFIG.end.winHold) : CONFIG.end.loseHold;
+  S.joker.armed = false;
+  S.selection = null;
+  fx('end', { kind });
+}
+function updateEnding(dt) {
+  if (S.mode !== 'ending') return;
+  S.endTimer -= dt;
+  if (S.endTimer <= 0) { S.mode = 'result'; fx('result'); }
+}
+/* =====================================================================
+   ÖĞRETİCİ — yalnızca ilk oyunda; saat ve sabır durur, tek hedef aydınlık
+   ===================================================================== */
+let tutorialSeen = false;
+/* Aşamalar: 0 teyze içecek · 1 fırına tavuk · 2 çocuk içecek · 3 adama but · 4 joker · 5 kapanış kartı · 6 serbest (ilk salata) */
+function newTutorial(on) {
+  return { on, stage: on ? 0 : 6, jokerDone: false, cardDone: false, sal: null, seg: null, step: null };
+}
+/** 0–5. aşamalar boyunca ve ilk salata adımında oyun saati ve sabır durur. */
+function tutFrozen() {
+  const T = S.tut;
+  return !!T && T.on && (T.stage < 6 || !!T.seg);
+}
+function tutCardOpen() {
+  const T = S.tut;
+  return !!T && T.on && T.stage === 5;
+}
+/** k. açılış misafirini (saat durduğu için) hemen oturtur, öğretici siparişini verir. */
+function tutSeat(k) {
+  const intro = CONFIG.game.intro[k];
+  const q = S.spawnQueue.findIndex(s => s.seat === intro.seat && s.type === intro.type);
+  if (q >= 0) {
+    const s = S.spawnQueue.splice(q, 1)[0];
+    if (!S.seats[s.seat].guest) {
+      seatGuest(s.seat, s.type);
+      const item = CONFIG.tutorial.script[k], g = S.seats[s.seat].guest;
+      if (item) g.order = [{ item, done: false, doneAt: -9 }];
+    }
+  }
+  const g = S.seats[intro.seat].guest;
+  return g && g.id === k + 1 ? g : null;
+}
+function tutUpdate() {
+  const T = S.tut;
+  if (!T || !T.on) return;
+  const X = CONFIG.text.tutorial;
+  T.seg = null; T.step = null;
+  for (let guard = 0; guard < 8; guard++) {
+    if (T.stage === 0 || T.stage === 2) {                        // içecek: dolap → bardak → misafir
+      const k = T.stage === 0 ? 0 : 2;
+      if (T.stage === 2) tutSeat(1);
+      const g = tutSeat(k);
+      const e = g && g.roundsDone === 0 && g.status === 'waiting' ? g.order.find(o => !o.done) : null;
+      if (!e) { T.stage++; continue; }
+      T.seg = { kind: 'drink', seat: CONFIG.game.intro[k].seat, item: e.item };
+    } else if (T.stage === 1) {                                  // fırına tavuk koy, beklemeden devam et
+      tutSeat(1);
+      if ((S.oven.state !== 'empty' && S.oven.state !== 'burnt') || S.plate > 0) { T.stage = 2; continue; }
+      T.step = { el: V.oven, label: X.tapOven };
+    } else if (T.stage === 3) {                                  // tavuk → adama but
+      const g = tutSeat(1);
+      const e = g && g.roundsDone === 0 && g.status === 'waiting' ? g.order.find(o => !o.done && o.item === 'drum') : null;
+      if (!e) { T.stage = 4; continue; }
+      T.seg = { kind: 'drum', seat: CONFIG.game.intro[1].seat, item: 'drum' };
+    } else if (T.stage === 4) {                                  // joker (harcanmaz)
+      if (T.jokerDone) { T.stage = 5; continue; }
+      T.step = { el: V.joker, label: X.joker.replace('{brand}', CONFIG.BRAND), joker: true };
+    } else if (T.stage === 5) {                                  // kapanış kartı
+      if (T.cardDone) { T.stage = 6; continue; }
+    } else {                                                     // ilk salata siparişi
+      if (T.sal) {
+        const g = S.seats[T.sal.seat].guest, e = g && g.id === T.sal.gid ? g.order[T.sal.idx] : null;
+        if (!e || e.done) { T.sal = null; T.on = false; return; }
+      } else {
+        for (let i = 0; i < S.seats.length && !T.sal; i++) {
+          const g = S.seats[i].guest;
+          if (!g || g.status !== 'waiting') continue;
+          const idx = g.order.findIndex(o => !o.done && o.item === 'salad');
+          if (idx >= 0) T.sal = { seat: i, gid: g.id, idx };
+        }
+        if (!T.sal) return;
+      }
+      T.seg = { kind: 'salad', seat: T.sal.seat, item: 'salad' };
+    }
+    break;
+  }
+  if (T.seg) T.step = tutStep();
+}
+/** O anda dokunulması gereken tek hedef ve etiketi (durumdan türetilir). */
+function tutStep() {
+  const seg = S.tut.seg, X = CONFIG.text.tutorial, g = S.seats[seg.seat].guest;
+  const give = { el: V.seats[seg.seat].root, label: X.giveTo[g.type] };
+  const sel = selectedItem();
+  if (sel === seg.item) return give;
+  const clear = () => freeTraySlot() < 0 ? (sel ? { el: V.trash, label: X.toTrash } : { el: V.traySlots[0], label: X.pickAny }) : null;
+  if (seg.kind === 'drum') {
+    if (S.plate > 0) return sel ? { el: V.plate, label: X.pickDrum } : give;   // otomatik servis tabaktan
+    if (S.oven.state === 'ready') return { el: V.oven, label: X.takeChicken };
+    if (S.oven.state === 'cooking') return { el: V.oven, label: X.cooking, wait: true };
+    return { el: V.oven, label: X.tapOven };
+  }
+  const k = S.tray.indexOf(seg.item);
+  if (seg.kind === 'salad') {
+    if (k >= 0) return sel ? { el: V.traySlots[k], label: X.pickSalad } : give; // otomatik servis tepsiden
+    return clear() || { el: V.board, label: X.tapBoard.replace('{n}', CONFIG.salad.taps - S.salad.stage) };
+  }
+  if (k >= 0) return { el: V.traySlots[k], label: X.pickCup };
+  return clear() || { el: V.bottles[seg.item], label: X.tapDrink[seg.item] };
+}
+
+function startGame() {
+  S = newState('play');
+  S.tut = newTutorial(!tutorialSeen);
+  tutorialSeen = true;
+  guestSeq = 0;
+  resetViews();
+  lastTime = performance.now();
+}
+
+/* =====================================================================
+   ÇİZİM (RENDER) — DOM'u state'e göre senkronlar
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const V = {};
+
+function buildDom() {
+  const T = CONFIG.text;
+  const CV = { green: '--green', darkGreen: '--dgreen', black: '--black', white: '--white', amber: '--amber', red: '--red', night: '--night', teyze: '--c-teyze', adam: '--c-adam', cocuk: '--c-cocuk' };
+  for (const k in CV) if (CONFIG.COLORS[k]) document.documentElement.style.setProperty(CV[k], CONFIG.COLORS[k]);
+  document.title = T.gameName.charAt(0) + T.gameName.slice(1).toLocaleLowerCase('tr');
+  Object.assign(V, {
+    game: $('game'), clock: $('clock'), score: $('score'), hearts: $('hearts'), mute: $('muteBtn'),
+    room: $('room'), win: $('window'), fwLayer: $('fwLayer'),
+    oven: $('oven'), ovenFood: $('ovenFood'), ring: $('ovenRing'),
+    plate: $('plate'), dish: $('dish'), plateBadge: $('plateBadge'),
+    board: $('board'), boardFood: $('boardFood'), prog: $('saladProg'), saladBadge: $('saladBadge'), holdMsg: $('holdMsg'), tutCard: $('tutCard'),
+    fridge: $('fridge'), tray: $('tray'), trash: $('trash'), joker: $('joker'),
+    fx: $('fx'), tutSpot: $('tutSpot'), tutLabel: $('tutLabel'), countdown: $('countdown'), canvas: $('fwCanvas'), endMsg: $('endMsg'),
+    start: $('startScreen'), result: $('resultScreen'), pause: $('pauseScreen'), toast: $('toast'), debug: $('debug'),
+  });
+  $('scoreLabel').textContent = T.score;
+  V.hearts.innerHTML = Array.from({ length: CONFIG.game.hearts }, () => asset('heart')).join('');
+  V.heartEls = Array.from(V.hearts.children);
+  V.mute.innerHTML = asset('soundOn');
+
+  // sandalyeler
+  const seatsEl = $('seats');
+  V.seats = [];
+  for (let i = 0; i < CONFIG.game.seatCount; i++) {
+    const s = document.createElement('div');
+    s.className = 'seat';
+    s.dataset.act = 'guest';
+    s.dataset.seat = i;
+    s.innerHTML = '<div class="g-wrap"><div class="g-slot"></div></div><div class="tk-wrap"></div>';
+    seatsEl.appendChild(s);
+    V.seats.push({ root: s, tkWrap: s.querySelector('.tk-wrap'), gSlot: s.querySelector('.g-slot'), id: undefined });
+  }
+  // tabak
+  V.dish.innerHTML = '<div class="pslot"></div>'.repeat(CONFIG.oven.drumsPerChicken);
+  V.plateSlots = Array.from(V.dish.children);
+  // salata ilerleme
+  V.prog.innerHTML = '<i></i>'.repeat(CONFIG.salad.taps);
+  V.progSegs = Array.from(V.prog.children);
+  // dolap
+  V.bottles = {};
+  V.fridge.querySelectorAll('.fbtn').forEach(b => { b.innerHTML = asset(BOTTLE_ASSET[b.dataset.drink]); V.bottles[b.dataset.drink] = b; });
+  // tepsi
+  V.traySlots = [];
+  for (let i = 0; i < CONFIG.tray.slots; i++) {
+    const d = document.createElement('div');
+    d.className = 'tslot';
+    d.dataset.act = 'tray';
+    d.dataset.idx = i;
+    V.tray.appendChild(d);
+    V.traySlots.push(d);
+  }
+  $('trashIcon').innerHTML = asset('trash');
+  V.joker.innerHTML = `<span class="jk-icon">${asset('scooter')}</span><span class="jk-t">${T.jokerLabel.replace('{brand}', CONFIG.BRAND)}</span>`;
+  V.joker.setAttribute('aria-label', CONFIG.BRAND);
+  $('tcText').textContent = T.tutorial.card;
+  $('tcBtn').textContent = T.tutorial.cardBtn;
+  V.game.style.setProperty('--flip', CONFIG.fx.flipScooter ? -1 : 1);
+  $('ovenTag').textContent = T.ovenReady;
+  $('burntTag').textContent = T.ovenBurnt;
+  // etiketler ve eğimler
+  document.querySelectorAll('[data-label]').forEach(e => { e.textContent = T.labels[e.dataset.label]; });
+  document.querySelectorAll('[data-tilt]').forEach((e, k) => e.style.setProperty('--r', tiltFor(k + 3) + 'deg'));
+  // ekranlar
+  $('stDeco').innerHTML = ['guestTeyze', 'guestAdam', 'guestCocuk'].map(k => asset(k)).join('');
+  const words = T.gameName.split(' ');
+  $('stTitle').innerHTML = words.length >= 2
+    ? `<span>${words[0]}</span><span>${words.slice(1).join(' ')}</span>`
+    : `<span>${T.gameName}</span>`;
+  $('stSub').textContent = T.subtitle;
+  $('sdTitle').innerHTML = $('stTitle').innerHTML;
+  $('sdDesc').textContent = T.desktopDesc;
+  $('sdScan').textContent = T.scanToPlay;
+  $('stBtn').textContent = T.start;
+  $('stBrand').textContent = T.conceptLine.replace('{brand}', CONFIG.BRAND);
+  $('resTag').textContent = T.tagline;
+  $('cpBrand').textContent = CONFIG.BRAND;
+  $('cpText').textContent = T.couponDiscount;
+  $('cpCodeLabel').textContent = T.couponCodeLabel;
+  $('cpCode').textContent = T.couponCode;
+  $('orderBtn').textContent = T.orderBtn;
+  $('replayBtn').textContent = T.replayBtn;
+  $('pauseTitle').textContent = T.paused;
+  $('resumeBtn').textContent = T.resume;
+  if (DEBUG) V.debug.style.display = 'block';
+  V.nextFw = 0;
+}
+
+function resetViews() {
+  V.seats.forEach(v => { v.id = undefined; v.tkWrap.innerHTML = ''; v.gSlot.innerHTML = ''; v.ticket = null; });
+  V.ovenState = V.plateSig = V.boardSig = V.jokerState = V.lastClock = V.lastScore = V.phaseCls = V.heartsSig = V.trashUrge = V.clockLate = V.clockPulse = V.jokerCharge = V.holdVis = V.cardVis = null;
+  drag = null;
+  V.traySigs = new Array(CONFIG.tray.slots).fill(null);
+  V.cd = 0;
+  V.countdown.classList.remove('show');
+  Array.from(V.fx.children).forEach(c => c.remove());
+  V.tutSpot.style.display = V.tutLabel.style.display = 'none';
+  V.tutVis = false; V.tutText = V.tutSize = null;
+  fwStop();
+  V.endMsg.classList.remove('show');
+  V.game.classList.remove('ending');
+}
+
+function buildGuestView(v, g, i) {
+  const cfg = CONFIG.guests[g.type];
+  v.tkWrap.innerHTML = `<div class="ticket" style="--r:${tiltFor(g.id * 7 + i)}deg"><div class="titems"></div><div class="pbar"><div class="pfill"></div></div></div>`;
+  v.gSlot.innerHTML = `<div class="g-crop"><div class="guest arrive"><span class="gface">${asset(cfg.asset)}</span></div></div><div class="hbubble"><span>${CONFIG.text.hungry}</span></div><div class="bubble"></div>`;
+  v.hb = v.gSlot.querySelector('.hbubble');
+  v.ticket = v.tkWrap.firstElementChild;
+  v.items = v.ticket.querySelector('.titems');
+  v.fill = v.ticket.querySelector('.pfill');
+  v.guestEl = v.gSlot.querySelector('.guest');
+  v.bubble = v.gSlot.querySelector('.bubble');
+  v.itemsSig = v.fillCls = v.statusKey = v.sad = v.urgent = null;
+}
+
+function renderSeat(i) {
+  const v = V.seats[i], g = S.seats[i].guest;
+  const gid = g ? g.id : null;
+  if (gid !== v.id) {
+    v.id = gid;
+    if (!g) { v.tkWrap.innerHTML = ''; v.gSlot.innerHTML = ''; v.ticket = null; return; }
+    buildGuestView(v, g, i);
+  }
+  if (!g) return;
+  const isig = g.order.map(o => o.item + (o.done ? '1' : '0')).join(',');
+  if (isig !== v.itemsSig) {
+    v.itemsSig = isig;
+    v.items.innerHTML = g.order.map(o =>
+      `<span class="titem${o.done ? ' done' : ''}${o.done && S.t - o.doneAt < 0.35 ? ' pop' : ''}">${asset(o.item)}${o.done ? asset('check') : ''}</span>`
+    ).join('');
+  }
+  const ratio = g.status === 'waiting' ? clamp01(g.patience / g.patienceMax)
+              : (g.status === 'leaving' && g.leaveReason === 'angry') ? 0 : 1;
+  v.fill.style.transform = `scaleX(${ratio.toFixed(3)})`;
+  const th = CONFIG.thresholds;
+  const band = ratio > th.green ? 'g' : ratio > th.yellow ? 'y' : 'r';
+  const fcls = g.status === 'waiting' ? band : 'g';
+  if (fcls !== v.fillCls) { v.fillCls = fcls; v.fill.className = 'pfill ' + fcls; }
+  const sad = (g.status === 'waiting' && band === 'r') || (g.status === 'leaving' && g.leaveReason === 'angry');
+  if (sad !== v.sad) { v.sad = sad; v.guestEl.classList.toggle('sad', sad); }
+  const urgent = g.status === 'waiting' && band === 'r';
+  if (urgent !== v.urgent) { v.urgent = urgent; v.ticket.classList.toggle('urgent', urgent); v.hb.classList.toggle('show', urgent); }
+  const sk = g.status + (g.leaveReason || '') + (g.smile > 0 ? 's' : '');
+  if (sk !== v.statusKey) {
+    v.statusKey = sk;
+    v.ticket.classList.toggle('eating', g.status === 'eating');
+    v.ticket.classList.toggle('gone', g.status === 'leaving');
+    v.guestEl.classList.toggle('smile', g.smile > 0 || g.status === 'eating');
+    if (g.status === 'leaving') {
+      v.guestEl.classList.remove('arrive');
+      v.guestEl.classList.add('leave');
+      const angry = g.leaveReason === 'angry';
+      v.bubble.textContent = angry ? CONFIG.text.angry : CONFIG.text.full;
+      v.bubble.className = 'bubble show' + (angry ? ' angry' : '');
+    }
+  }
+}
+
+function renderState() {
+  const G = V.game;
+  const pc = 'phase-' + S.phase;
+  if (pc !== V.phaseCls) { G.classList.remove('phase-0', 'phase-1', 'phase-2'); G.classList.add(pc); V.phaseCls = pc; }
+  G.classList.toggle('armed', S.joker.armed && S.mode === 'play');
+
+  const ct = clockText(S.t);
+  if (ct !== V.lastClock) { V.lastClock = ct; V.clock.textContent = ct; }
+  const late = S.t >= CONFIG.game.phaseStarts[2];
+  if (late !== V.clockLate) { V.clockLate = late; V.clock.classList.toggle('late', late); }
+  const cpulse = S.mode === 'play' && S.t < CONFIG.game.duration && CONFIG.game.duration - S.t <= CONFIG.game.countdownFrom;
+  if (cpulse !== V.clockPulse) { V.clockPulse = cpulse; V.clock.classList.toggle('pulse', cpulse); }
+  if (S.score !== V.lastScore) { V.lastScore = S.score; V.score.textContent = S.score; }
+  if (S.hearts !== V.heartsSig) { V.heartsSig = S.hearts; V.heartEls.forEach((h, k) => h.classList.toggle('lost', k >= S.hearts)); }
+
+  for (let i = 0; i < V.seats.length; i++) renderSeat(i);
+
+  // fırın
+  const o = S.oven;
+  if (o.state !== V.ovenState) {
+    V.ovenState = o.state;
+    V.oven.classList.remove('empty', 'cooking', 'ready', 'burnt');
+    V.oven.classList.add(o.state);
+    V.ovenFood.innerHTML = o.state === 'empty' ? `<span class="oven-empty">${asset('chickenGhost')}<b class="plus">+</b></span>` :
+      asset({ cooking: 'chickenCooking', ready: 'chickenReady', burnt: 'chickenBurnt' }[o.state]);
+    V.chickenEl = V.ovenFood.firstElementChild;
+  }
+  if (o.state === 'cooking') {
+    const p = clamp01(1 - o.timer / CONFIG.oven.cookTime);
+    V.ring.style.setProperty('--p', p.toFixed(3));
+    V.ring.style.setProperty('--rc', '#ffb300');
+    const roast = V.chickenEl && V.chickenEl.querySelector('.roast');
+    if (roast) roast.style.opacity = p.toFixed(3);
+  } else if (o.state === 'ready') {
+    V.ring.style.setProperty('--p', clamp01(o.timer / o.readyTotal).toFixed(3));
+    V.ring.style.setProperty('--rc', o.timer <= CONFIG.oven.warnBefore ? '#e2332b' : '#4caf50');
+  }
+
+  // tabak
+  const plateSel = isSelected('plate');
+  const psig = S.plate + (plateSel ? 's' : '');
+  if (psig !== V.plateSig) {
+    V.plateSig = psig;
+    V.plateSlots.forEach((el, k) => {
+      el.innerHTML = k < S.plate ? `<span class="pick${plateSel && k === S.plate - 1 ? ' sel' : ''}">${asset('drum')}</span>` : `<span class="ghost">${asset('drum')}</span>`;
+    });
+    V.plateBadge.textContent = S.plate + '/' + CONFIG.oven.drumsPerChicken;
+  }
+
+  // salata tahtası
+  if (S.salad.stage !== V.boardSig) {
+    V.boardSig = S.salad.stage;
+    const k = SALAD_STAGE_ASSET[S.salad.stage];
+    V.boardFood.innerHTML = k ? asset(k) : `<span class="ghost">${asset('saladStage1')}</span>`;
+    V.progSegs.forEach((s, j) => s.classList.toggle('on', j < S.salad.stage));
+    V.saladBadge.textContent = S.salad.stage + '/' + CONFIG.salad.taps;
+    V.saladBadge.classList.toggle('hide', S.salad.stage === 0);
+    if (S.salad.stage > 0) bump(V.saladBadge, 1.3);
+  }
+
+  // tepsi
+  for (let i = 0; i < V.traySlots.length; i++) {
+    const it = S.tray[i], sel = isSelected('tray', i);
+    const sig = (it || '-') + (sel ? 's' : '');
+    if (sig !== V.traySigs[i]) {
+      V.traySigs[i] = sig;
+      V.traySlots[i].innerHTML = it ? `<span class="pick${sel ? ' sel' : ''}">${asset(it)}</span>` : '';
+    }
+  }
+
+  // çöp: sadece gerektiğinde dikkat çeker
+  const urge = S.mode === 'play' && ((S.oven.state === 'ready' && S.plate > 0) || S.tray.every(Boolean));
+  if (urge !== V.trashUrge) { V.trashUrge = urge; V.trash.classList.toggle('urge', urge); }
+
+  // joker
+  const js = S.joker.armed ? 'armed' : S.joker.charge >= 1 ? 'ready' : 'charging';
+  if (js !== V.jokerState) { V.jokerState = js; V.joker.className = js; }
+  const jc = S.joker.charge.toFixed(3);
+  if (jc !== V.jokerCharge) { V.jokerCharge = jc; V.joker.style.setProperty('--jc', jc); }
+
+  // ilk kalp kaybı duraklaması ve öğretici kapanış kartı
+  const hold = S.mode === 'play' && S.hold > 0;
+  if (hold !== V.holdVis) {
+    V.holdVis = hold;
+    if (hold) { const p = S.holdText.split('♥'); V.holdMsg.textContent = p[0]; if (p.length > 1) { const b = document.createElement('b'); b.textContent = '♥' + p[1]; V.holdMsg.appendChild(b); } }
+    V.holdMsg.classList.toggle('show', hold);
+    G.classList.toggle('holding', hold);
+  }
+  const card = S.mode === 'play' && tutCardOpen();
+  if (card !== V.cardVis) { V.cardVis = card; V.tutCard.classList.toggle('show', card); }
+
+  // geri sayım
+  const rem = CONFIG.game.duration - S.t;
+  const n = (S.mode === 'play' && rem <= CONFIG.game.countdownFrom && rem > 0) ? Math.ceil(rem) : 0;
+  if (n !== V.cd) {
+    V.cd = n;
+    if (n > 0) {
+      V.countdown.textContent = n;
+      V.countdown.classList.add('show');
+      V.countdown.animate([{ transform: 'scale(1.7)', opacity: 0 }, { transform: 'scale(1)', opacity: 0.88 }], { duration: 260, easing: 'ease-out' });
+      Sound.play('tick');
+    } else V.countdown.classList.remove('show');
+  }
+
+  // ekranlar
+  V.start.classList.toggle('show', S.mode === 'start');
+  V.result.classList.toggle('show', S.mode === 'result');
+  V.pause.classList.toggle('show', S.mode === 'play' && S.paused);
+}
+
+/* ---------- öğretici spot ışığı ---------- */
+function renderTutorial() {
+  const T = S.tut;
+  const st = S.mode === 'play' && !S.paused && !(S.hold > 0) && T && T.on ? T.step : null;
+  const sp = V.tutSpot, lb = V.tutLabel;
+  if (!st || !st.el) {
+    if (V.tutVis) { sp.style.display = lb.style.display = 'none'; V.tutVis = false; V.tutText = null; }
+    return;
+  }
+  if (!V.tutVis) { sp.style.display = lb.style.display = 'block'; V.tutVis = true; }
+  const gr = V.game.getBoundingClientRect(), r = st.el.getBoundingClientRect(), pad = 6;
+  const x = r.left - gr.left - pad, y = r.top - gr.top - pad, w = r.width + pad * 2, h = r.height + pad * 2;
+  const size = Math.round(w) + 'x' + Math.round(h);
+  if (size !== V.tutSize) { V.tutSize = size; sp.style.width = Math.round(w) + 'px'; sp.style.height = Math.round(h) + 'px'; }
+  sp.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
+  sp.classList.toggle('wait', !!st.wait);
+  const inner = lb.firstElementChild;
+  if (st.label !== V.tutText) {
+    V.tutText = st.label;
+    inner.textContent = st.label;
+    inner.animate([{ transform: 'scale(.6)', opacity: 0 }, { transform: 'scale(1.08)', opacity: 1, offset: .7 }, { transform: 'scale(1)' }], { duration: 260, easing: 'ease-out' });
+  }
+  const lw = lb.offsetWidth, lh = lb.offsetHeight, gw = V.game.clientWidth, gh = V.game.clientHeight;
+  const lx = Math.max(8, Math.min(gw - lw - 8, x + w / 2 - lw / 2));
+  const above = y + h / 2 > gh * 0.5;
+  const ly = Math.max(6, Math.min(gh - lh - 6, above ? y - lh - 14 : y + h + 14));
+  lb.style.transform = `translate(${lx.toFixed(1)}px,${ly.toFixed(1)}px)`;
+}
+
+function renderExtras(now, dt) {
+  renderTutorial();
+
+  if ((S.mode === 'play' && !S.paused) || S.mode === 'start') {
+    if (now >= V.nextFw) {
+      windowFirework();
+      const k = S.phase === 2 ? 0.45 : 1;
+      V.nextFw = now + rand(CONFIG.fx.windowFwMinMs, CONFIG.fx.windowFwMaxMs) * k;
+    }
+  }
+  fwStep(dt);
+  if (DEBUG) renderDebug();
+}
+
+function renderDebug() {
+  const L = [
+    `t=${S.t.toFixed(1)} ${CONFIG.game.phaseNames[S.phase]} ${clockText(S.t)} mod=${S.mode}${S.paused ? ' (DURAK)' : ''}${EASY ? ' EASY' : ''}`,
+    `kalp=${S.hearts} skor=${S.score} joker=${S.joker.armed ? 'hazırda' : Math.round(S.joker.charge * 100) + '%'} kurtarma=${S.stats.jokers}`,
+    `öğretici=${S.tut && S.tut.on ? 'aşama ' + S.tut.stage + ':' + (S.tut.step ? S.tut.step.label : '-') : 'kapalı'}${tutFrozen() ? ' (saat durdu)' : ''}${S.hold > 0 ? ' DURAKLAMA' : ''}`,
+    `fırın=${S.oven.state}${S.oven.state === 'cooking' || S.oven.state === 'ready' ? ' ' + S.oven.timer.toFixed(1) : ''} tabak=${S.plate} salata=${S.salad.stage}`,
+    `tepsi=[${S.tray.map(x => x || '-').join(',')}] seçim=${S.selection ? S.selection.src + (S.selection.idx !== undefined ? S.selection.idx : '') : '-'}`,
+    `doyan=${S.stats.fed} servis=${S.stats.served} dokunuş=${S.stats.taps}`,
+  ];
+  S.seats.forEach((s, k) => {
+    const g = s.guest;
+    L.push(g ? `#${k} ${g.type} ${g.status} sabır ${g.patience.toFixed(1)}/${g.patienceMax.toFixed(1)} tur ${g.roundsDone}/${g.roundsTotal} [${g.order.map(o => o.item + (o.done ? '✓' : '')).join(' ')}]`
+             : `#${k} boş${s.respawnAt !== null ? ' → ' + s.respawnAt.toFixed(1) : ''}`);
+  });
+  V.debug.textContent = L.join('\n');
+}
+
+/* =====================================================================
+   EFEKTLER — state olaylarını ses + animasyona çevirir
+   ===================================================================== */
+const LATE_FX = { bottle: 1, saladDone: 1, ovenToPlate: 1 };   // yeni DOM gerektirenler
+
+function flushFx() {
+  if (!S.events.length) return;
+  const evs = S.events.splice(0);
+  const late = [];
+  for (const e of evs) { if (LATE_FX[e.type]) late.push(e); else handleFx(e); }
+  if (late.length) { renderState(); late.forEach(handleFx); }
+}
+
+function gameRect() { return V.game.getBoundingClientRect(); }
+function ticketOf(i) { const v = V.seats[i]; return (v && v.ticket) || (v && v.root); }
+function anchorEl(a) {
+  if (a && typeof a === 'object' && 'seat' in a) return ticketOf(a.seat);
+  return { oven: V.oven, plate: V.plate, trash: V.trash, tray: V.tray, board: V.board, joker: V.joker }[a] || null;
+}
+function sourceEl(from) {
+  return from.src === 'plate' ? V.plateSlots[from.idx] : V.traySlots[from.idx];
+}
+function shake(el, mag, dur) {
+  if (!el) return;
+  mag = mag || 6; dur = dur || 220;
+  const n = Math.max(4, Math.round(dur / 45)), kf = [];
+  for (let k = 0; k <= n; k++) {
+    const d = k === 0 || k === n ? 0 : (k % 2 ? 1 : -1) * mag * (1 - k / n);
+    kf.push({ transform: `translateX(${d.toFixed(1)}px)` });
+  }
+  el.animate(kf, { duration: dur, easing: 'linear' });
+}
+function bump(el, s) {
+  if (!el) return;
+  s = s || 1.15;
+  el.animate([{ transform: 'scale(1)' }, { transform: `scale(${s})` }, { transform: 'scale(1)' }], { duration: 180, easing: 'ease-out' });
+}
+function pulseClass(el, cls, ms) {
+  if (!el) return;
+  el.classList.remove(cls);
+  void el.offsetWidth;
+  el.classList.add(cls);
+  clearTimeout(el._pt);
+  el._pt = setTimeout(() => el.classList.remove(cls), ms);
+}
+function centerOf(el, gr) {
+  const r = el.getBoundingClientRect();
+  return { x: r.left - gr.left + r.width / 2, y: r.top - gr.top + r.height / 2, h: r.height };
+}
+function flyClone(srcEl, dstEl, html, opt) {
+  if (!srcEl || !dstEl) return;
+  opt = opt || {};
+  const gr = gameRect(), a = centerOf(srcEl, gr), b = centerOf(dstEl, gr);
+  const d = document.createElement('div');
+  d.className = 'fly';
+  d.innerHTML = html;
+  d.style.fontSize = (parseFloat(getComputedStyle(srcEl).fontSize) || 28) + 'px';
+  d.style.left = a.x + 'px';
+  d.style.top = a.y + 'px';
+  V.fx.appendChild(d);
+  const dx = b.x - a.x, dy = b.y - a.y, end = opt.endScale || 0.6;
+  const anim = d.animate([
+    { transform: 'translate(-50%,-50%) translate(0px,0px) scale(1.1)', opacity: 1 },
+    { transform: `translate(-50%,-50%) translate(${dx / 2}px,${dy / 2 - 34}px) scale(1.05)`, opacity: 1 },
+    { transform: `translate(-50%,-50%) translate(${dx}px,${dy}px) scale(${end})`, opacity: opt.fade ? 0 : 1 },
+  ], { duration: opt.dur || CONFIG.fx.flyMs, easing: 'cubic-bezier(.3,.6,.4,1)' });
+  anim.onfinish = () => d.remove();
+}
+function dropInto(slotEl, fromEl) {
+  const t = slotEl && slotEl.firstElementChild;
+  if (!t || !fromEl) return;
+  const a = fromEl.getBoundingClientRect(), b = t.getBoundingClientRect();
+  const dx = (a.left + a.width / 2) - (b.left + b.width / 2);
+  const dy = (a.top + a.height / 2) - (b.top + b.height / 2);
+  t.animate([
+    { transform: `translate(${dx}px,${dy}px) scale(.7)` },
+    { transform: `translate(${dx * 0.45}px,${dy * 0.45 - 40}px) scale(1.05)`, offset: 0.55 },
+    { transform: 'translate(0px,0px) scale(1)', offset: 0.84 },
+    { transform: 'translate(0px,-6px) scale(1)', offset: 0.92 },
+    { transform: 'translate(0px,0px) scale(1)' },
+  ], { duration: 320, easing: 'ease-out' });
+}
+function crumbs(el, colors, count) {
+  if (!el) return;
+  colors = colors || ['#d8342a', '#7cb342', '#f6ecd4', '#caa77a'];
+  const gr = gameRect(), c = centerOf(el, gr);
+  for (let k = 0; k < (count || 9); k++) {
+    const p = document.createElement('i');
+    p.className = 'crumb';
+    p.style.left = (c.x - 3) + 'px';
+    p.style.top = (c.y - 3) + 'px';
+    p.style.background = pick(colors);
+    V.fx.appendChild(p);
+    const a = rand(0, Math.PI * 2), d = rand(18, 44);
+    p.animate([
+      { transform: 'translate(0px,0px) rotate(0deg)', opacity: 1 },
+      { transform: `translate(${(Math.cos(a) * d).toFixed(1)}px,${(Math.sin(a) * d + 14).toFixed(1)}px) rotate(${randInt(-220, 220)}deg)`, opacity: 0 },
+    ], { duration: rand(380, 560), easing: 'cubic-bezier(.2,.7,.4,1)' }).onfinish = () => p.remove();
+  }
+}
+function floatText(text, el, neg, big) {
+  if (!el) return;
+  const gr = gameRect(), c = centerOf(el, gr);
+  const d = document.createElement('div');
+  d.className = 'float' + (neg ? ' neg' : '') + (big ? ' big' : '');
+  d.textContent = text;
+  d.style.left = c.x + 'px';
+  d.style.top = (c.y + (big ? 12 : -c.h * 0.2)) + 'px';
+  V.fx.appendChild(d);
+  d.animate([
+    { transform: 'translate(-50%,-50%) scale(.6)', opacity: 0 },
+    { transform: 'translate(-50%,-80%) scale(1.15)', opacity: 1, offset: 0.2 },
+    { transform: 'translate(-50%,-260%) scale(1)', opacity: 0 },
+  ], { duration: big ? 1200 : 900, easing: 'ease-out' }).onfinish = () => d.remove();
+}
+function celebrate(el) {
+  if (!el) return;
+  el.animate([
+    { transform: 'scale(1) rotate(0deg)' }, { transform: 'scale(1.18) rotate(-4deg)' },
+    { transform: 'scale(.95) rotate(2deg)' }, { transform: 'scale(1) rotate(0deg)' },
+  ], { duration: 460, easing: 'ease-out' });
+  crumbs(el, ['#ffd54a', '#ff7043', '#66bb6a', '#42a5f5', '#fff'], 12);
+}
+function banner(text) {
+  const d = document.createElement('div');
+  d.className = 'banner';
+  d.textContent = text;
+  V.fx.appendChild(d);
+  d.animate([
+    { transform: 'translateX(-110%) rotate(-4deg)' },
+    { transform: 'translateX(0%) rotate(-4deg)', offset: 0.22 },
+    { transform: 'translateX(0%) rotate(-3deg)', offset: 0.78 },
+    { transform: 'translateX(110%) rotate(-4deg)' },
+  ], { duration: 1250, easing: 'ease-in-out' }).onfinish = () => d.remove();
+}
+function scooter() {
+  const gr = gameRect(), rr = V.room.getBoundingClientRect();
+  const d = document.createElement('div');
+  d.className = 'scooter';
+  d.innerHTML = `<span class="speed"></span>${asset('scooter')}`;
+  d.style.top = (rr.top - gr.top + rr.height * 0.42) + 'px';
+  V.fx.appendChild(d);
+  d.animate([{ transform: 'translateX(-130px)' }, { transform: `translateX(${gr.width + 30}px)` }],
+            { duration: CONFIG.joker.scooterMs, easing: 'cubic-bezier(.45,0,.55,1)' }).onfinish = () => d.remove();
+}
+function windowFirework() {
+  const w = V.win.clientWidth, h = V.win.clientHeight;
+  if (!w || !h) return;
+  const x = rand(0.1, 0.9) * w, y = rand(0.12, 0.45) * h;
+  const col = pick(['#ffd54a', '#ff6b6b', '#7ee8fa', '#b388ff', '#9cff8a', '#ffffff']);
+  const n = 10, dist = rand(10, 20);
+  for (let k = 0; k < n; k++) {
+    const p = document.createElement('i');
+    p.className = 'fwp';
+    p.style.left = x + 'px';
+    p.style.top = y + 'px';
+    p.style.background = col;
+    V.fwLayer.appendChild(p);
+    const a = k / n * Math.PI * 2;
+    p.animate([
+      { transform: 'translate(0px,0px) scale(1)', opacity: 1 },
+      { transform: `translate(${(Math.cos(a) * dist).toFixed(1)}px,${(Math.sin(a) * dist + 6).toFixed(1)}px) scale(.3)`, opacity: 0 },
+    ], { duration: 900, easing: 'cubic-bezier(.1,.7,.3,1)' }).onfinish = () => p.remove();
+  }
+}
+function toast(text) {
+  V.toast.textContent = text;
+  V.toast.classList.add('show');
+  clearTimeout(V.toastT);
+  V.toastT = setTimeout(() => V.toast.classList.remove('show'), 1800);
+}
+
+/* ---------- final havai fişekleri (canvas) ---------- */
+const FW = { on: false, big: false, parts: [], next: 0, ctx: null, w: 0, h: 0, lastBoom: 0 };
+function fwStart(big) {
+  const c = V.canvas, dpr = Math.min(2, window.devicePixelRatio || 1);
+  FW.w = V.game.clientWidth; FW.h = V.game.clientHeight;
+  c.width = Math.round(FW.w * dpr); c.height = Math.round(FW.h * dpr);
+  FW.ctx = c.getContext('2d');
+  FW.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  FW.on = true; FW.big = big; FW.parts = []; FW.next = 0;
+  c.classList.add('show');
+}
+function fwStop() {
+  FW.on = false; FW.parts = [];
+  if (V.canvas) V.canvas.classList.remove('show');
+  if (FW.ctx) FW.ctx.clearRect(0, 0, FW.w, FW.h);
+}
+function fwBurst() {
+  const x = rand(0.12, 0.88) * FW.w, y = rand(0.08, 0.5) * FW.h;
+  const hue = randInt(0, 360), n = FW.big ? 70 : 46, sp = FW.big ? rand(170, 270) : rand(120, 200);
+  for (let k = 0; k < n; k++) {
+    const a = k / n * Math.PI * 2 + rand(-0.05, 0.05), s = sp * rand(0.55, 1);
+    FW.parts.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: rand(0.8, 1.3), max: 1.3,
+                    r: rand(1.5, 3.2), c: `hsl(${(hue + randInt(-25, 25) + 360) % 360},100%,${randInt(55, 72)}%)` });
+  }
+  if (FW.parts.length > 900) FW.parts.splice(0, FW.parts.length - 900);
+  const now = performance.now();
+  if (now - FW.lastBoom > 260) { FW.lastBoom = now; Sound.play('patlama'); }
+}
+function fwStep(dt) {
+  if (!FW.on) return;
+  FW.next -= dt;
+  if (FW.next <= 0) { fwBurst(); FW.next = FW.big ? rand(0.08, 0.16) : rand(0.18, 0.3); }
+  const ctx = FW.ctx;
+  ctx.clearRect(0, 0, FW.w, FW.h);
+  for (let k = FW.parts.length - 1; k >= 0; k--) {
+    const p = FW.parts[k];
+    p.life -= dt;
+    if (p.life <= 0) { FW.parts.splice(k, 1); continue; }
+    p.vx *= 0.985;
+    p.vy = p.vy * 0.985 + 140 * dt;
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    ctx.globalAlpha = Math.min(1, p.life / p.max * 1.5);
+    ctx.fillStyle = p.c;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+function loseText() { return CONFIG.text.loseTitle.replace('{time}', S.endClock); }
+function onEnd(kind) {
+  V.game.classList.add('ending');
+  V.countdown.classList.remove('show');
+  if (kind === 'win') {
+    V.endMsg.innerHTML = `<div class="em-big">${CONFIG.text.winTitle}</div>` +
+      (S.perfect ? `<div class="em-sub">${CONFIG.text.perfectTitle}</div>` : '');
+    fwStart(S.perfect);
+  } else {
+    V.endMsg.innerHTML = `<div class="em-lose">${loseText()}</div>`;
+    Sound.play('lose');
+  }
+  V.endMsg.classList.add('show');
+}
+function onResult() {
+  fwStop();
+  V.endMsg.classList.remove('show');
+  V.game.classList.remove('ending');
+  const T = CONFIG.text;
+  $('resTitle').textContent = S.endKind === 'win' ? T.winTitle : loseText();
+  const sub = $('resSub');
+  sub.textContent = S.perfect ? T.perfectTitle : '';
+  sub.style.display = S.perfect ? '' : 'none';
+  $('resStats').innerHTML =
+    `<span>${T.statFed}</span><b>${S.stats.fed}</b>` +
+    `<span>${T.statServed}</span><b>${S.stats.served}</b>` +
+    `<span>${T.statTaps}</span><b>${S.stats.taps}</b>` +
+    `<span>${T.statScore}</span><b>${S.score}</b>` +
+    (S.stats.jokers > 0 ? `<span class="full">${T.jokerSaved.replace('{brand}', CONFIG.BRAND).replace('{n}', S.stats.jokers)}</span>` : '');
+}
+
+function handleFx(e) {
+  switch (e.type) {
+    case 'float':       floatText(e.text, anchorEl(e.anchor), e.neg, e.big); break;
+    case 'select':      Sound.play('select'); break;
+    case 'deselect':    Sound.play('deselect'); break;
+    case 'nudge':       shake(anchorEl(e.target), 3, 160); break;
+    case 'bottle':      Sound.play('tik'); dropInto(V.traySlots[e.slot], V.bottles[e.drink]); bump(V.bottles[e.drink], 1.08); break;
+    case 'saladDone':   Sound.play('chop'); crumbs(V.boardFood); dropInto(V.traySlots[e.slot], V.boardFood); break;
+    case 'trayFull':    Sound.play('bzzt'); shake(V.tray, 6, 220); break;
+    case 'salad':       Sound.play('chop'); crumbs(V.boardFood); bump(V.boardFood, 1.2); break;
+    case 'deliver':     Sound.play('ding'); flyClone(V.dropGhost || sourceEl(e.from), ticketOf(e.seat), asset(e.item)); break;
+    case 'wrong':       Sound.play('bzzt'); shake(ticketOf(e.seat), 7, 200); break;
+    case 'complete':    Sound.play('complete'); celebrate(ticketOf(e.seat)); break;
+    case 'trash':       Sound.play('pof'); flyClone(V.dropGhost || sourceEl(e.from), V.trash, asset(e.item), { endScale: 0.3, fade: true }); setTimeout(() => shake(V.trash, 4, 200), 180); break;
+    case 'ovenIn':      Sound.play('ovenIn'); bump(V.oven, 1.05); break;
+    case 'ovenBusy':    Sound.play('soft'); shake(V.oven, 3, 180); break;
+    case 'ovenReady':   Sound.play('cin'); bump(V.ovenFood, 1.25); break;
+    case 'ovenWarn':    Sound.play('bipbip'); shake(V.oven, 3, 900); break;
+    case 'burnt':       Sound.play('burn'); shake(V.oven, 6, 300); break;
+    case 'ovenToPlate': {
+      Sound.play('plate');
+      const gr = gameRect(), oc = centerOf(V.ovenFood, gr);
+      V.plateSlots.forEach((s, k) => {
+        const el = s.querySelector('.pick');
+        if (!el) return;
+        const c = centerOf(el, gr);
+        el.animate([{ transform: `translate(${oc.x - c.x}px,${oc.y - c.y}px) scale(.5)` }, { transform: 'translate(0px,0px) scale(1)' }],
+                   { duration: 240 + k * 40, easing: 'cubic-bezier(.2,.8,.3,1.2)' });
+      });
+      break;
+    }
+    case 'plateBlocked': Sound.play('bzzt'); shake(V.oven, 6, 220); shake(V.plate, 3, 220); pulseClass(V.plateBadge, 'alert', 760); break;
+    case 'clean':       Sound.play('pof'); crumbs(V.ovenFood, ['#222', '#555', '#888'], 10); break;
+    case 'arrive':      Sound.play('dingdong'); break;
+    case 'order':       Sound.play('paper'); bump(ticketOf(e.seat), 1.08); break;
+    case 'full':        Sound.play('happy'); break;
+    case 'angry':       Sound.play('angry'); shake(V.seats[e.seat].root, 5, 300); break;
+    case 'heart': {
+      const h = V.heartEls[e.idx];
+      if (h) h.animate([{ transform: 'scale(1.9)' }, { transform: 'scale(1)' }], { duration: 420, easing: 'ease-out' });
+      shake(V.hearts, 5, 300);
+      Sound.play('heart');
+      break;
+    }
+    case 'phase':       break;                    // aşama bantları kaldırıldı; saat rengi yeterli
+    case 'hungry':      Sound.play('hungry'); break;
+    case 'heartBand':   banner(e.text); break;
+    case 'jokerUnlock': Sound.play('unlock'); bump(V.joker, 1.25); break;
+    case 'jokerArm':    Sound.play('select'); break;
+    case 'jokerDisarm': Sound.play('deselect'); break;
+    case 'jokerDenied': Sound.play('bzzt'); shake(V.joker, 5, 200); break;
+    case 'joker':       Sound.play('vroom'); scooter(); break;
+    case 'end':         onEnd(e.kind); break;
+    case 'result':      onResult(); break;
+  }
+}
+
+/* =====================================================================
+   GİRDİ
+   ===================================================================== */
+function toggleMute() {
+  Sound.setMuted(!Sound.muted);
+  V.mute.innerHTML = asset(Sound.muted ? 'soundOff' : 'soundOn');
+}
+function onPointerDown(e) {
+  if (S.mode === 'play' && !S.paused) S.stats.taps++;
+  const t = e.target.closest('[data-act]');
+  if (!t || !V.game.contains(t)) return;
+  if (e.cancelable) e.preventDefault();
+  const act = t.dataset.act;
+  switch (act) {
+    case 'mute': toggleMute(); return;
+    case 'start':
+    case 'replay': startGame(); renderState(); return;
+    case 'order': Sound.play('select'); toast(CONFIG.text.orderToast); return;
+    case 'resume': S.paused = false; lastTime = performance.now(); renderState(); return;
+    case 'tutStart':
+      if (S.mode === 'play' && tutCardOpen()) { S.tut.cardDone = true; Sound.play('select'); lastTime = performance.now(); refreshAfterInput(); }
+      return;
+  }
+  const draggable = act === 'tray' || act === 'plate';
+  const idx = +t.dataset.idx;
+  if (draggable && isSelected(act, idx)) { beginDrag(e, t, true); return; }   // seçiliyi sürükleyebilir; bırakmadan kalkarsa seçim kalkar
+  const ok = doAction(t);
+  if (ok && draggable && isSelected(act, idx)) beginDrag(e, t, false);
+}
+
+/** Oyun eylemi (dokunuş veya bırakma). Öğretici sırasında yalnızca hedef geçerli. */
+function doAction(t) {
+  if (S.mode !== 'play' || S.paused || S.hold > 0 || tutCardOpen()) return false;
+  const act = t.dataset.act;
+  if (tutFrozen()) {
+    const st = S.tut.step;
+    if (!st || st.wait || t !== st.el) return false;           // yanlış yere dokunuş yok sayılır
+    if (st.joker) { S.tut.jokerDone = true; Sound.play('select'); refreshAfterInput(); return true; }  // öğreticide joker harcanmaz
+  }
+  switch (act) {
+    case 'oven':   actOven(); break;
+    case 'plate':  actPlate(); break;
+    case 'salad':  actSalad(); break;
+    case 'bottle': actBottle(t.dataset.drink); break;
+    case 'tray':   actTray(+t.dataset.idx); break;
+    case 'trash':  actTrash(); break;
+    case 'guest':  actGuest(+t.dataset.seat); break;
+    case 'joker':  actJoker(); break;
+  }
+  refreshAfterInput();
+  return true;
+}
+function refreshAfterInput() {
+  tutUpdate();
+  flushFx();
+  renderState();
+  renderTutorial();
+}
+
+/* ---------- sürükle-bırak (tabaktaki but, tepsideki ürünler → misafir / çöp) ---------- */
+let drag = null;
+function beginDrag(e, t, deferred) {
+  drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, t, deferred, moving: false, ghost: null, pick: null, over: null };
+}
+function dragPick(t) {
+  if (t.dataset.act === 'plate') { const sl = V.plateSlots[S.plate - 1]; return sl ? sl.querySelector('.pick') : null; }
+  return t.querySelector('.pick');
+}
+function dropTarget(x, y) {
+  const el = document.elementFromPoint(x, y);
+  const t = el && el.closest('[data-act="guest"],[data-act="trash"]');
+  return t && V.game.contains(t) ? t : null;
+}
+function onPointerMove(e) {
+  if (!drag || e.pointerId !== drag.id) return;
+  const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+  if (!drag.moving) {
+    if (dx * dx + dy * dy < 64) return;
+    const item = selectedItem();
+    if (!item || S.mode !== 'play' || S.paused || S.hold > 0) { drag = null; return; }
+    drag.moving = true;
+    const src = dragPick(drag.t);
+    const g = document.createElement('div');
+    g.className = 'drag-ghost';
+    g.innerHTML = asset(item);
+    g.style.fontSize = getComputedStyle(src ? src.parentElement : drag.t).fontSize;
+    V.fx.appendChild(g);
+    drag.ghost = g; drag.pick = src;
+    if (src) src.classList.add('dragging');
+  }
+  const gr = gameRect();
+  drag.ghost.style.transform = `translate(${(e.clientX - gr.left).toFixed(1)}px,${(e.clientY - gr.top).toFixed(1)}px) translate(-50%,-60%) scale(1.15)`;
+  const over = dropTarget(e.clientX, e.clientY);
+  if (over !== drag.over) {
+    if (drag.over) drag.over.classList.remove('drop-over');
+    drag.over = over;
+    if (over) over.classList.add('drop-over');
+  }
+}
+function onPointerUp(e) {
+  if (!drag || e.pointerId !== drag.id) return;
+  const d = drag;
+  drag = null;
+  if (d.over) d.over.classList.remove('drop-over');
+  if (!d.moving) { if (d.deferred && e.type === 'pointerup') doAction(d.t); return; }
+  const target = e.type === 'pointerup' ? dropTarget(e.clientX, e.clientY) : null;
+  let ok = false;
+  if (target) {
+    const sig = () => S.stats.served + '|' + S.tray.join(',') + '|' + S.plate;
+    const before = sig();
+    V.dropGhost = d.ghost;
+    doAction(target);
+    V.dropGhost = null;
+    ok = sig() !== before;
+  }
+  if (d.pick) d.pick.classList.remove('dragging');
+  if (ok) { d.ghost.remove(); return; }
+  const src = d.pick || d.t, gr = gameRect(), r = src.getBoundingClientRect();      // başarısız: yerine döner
+  const to = `translate(${(r.left - gr.left + r.width / 2).toFixed(1)}px,${(r.top - gr.top + r.height / 2).toFixed(1)}px) translate(-50%,-50%) scale(1)`;
+  d.ghost.animate([{ transform: d.ghost.style.transform }, { transform: to }], { duration: 180, easing: 'ease-out' }).onfinish = () => d.ghost.remove();
+}
+
+/* =====================================================================
+   DÖNGÜ
+   ===================================================================== */
+let lastTime = performance.now();
+function frame(now) {
+  let dt = (now - lastTime) / 1000;
+  lastTime = now;
+  if (!(dt > 0)) dt = 0;
+  if (dt > 0.1) dt = 0.1;
+  update(dt);
+  updateEnding(dt);
+  flushFx();
+  renderState();
+  renderExtras(now, dt);
+  requestAnimationFrame(frame);
+}
+
+/* ---------- masaüstü düzeni + QR ---------- */
+function applyLayout() {
+  const on = window.innerWidth > CONFIG.desktop.minWidth && window.matchMedia('(pointer: fine)').matches;
+  document.body.classList.toggle('desktop', on);
+  if (on && !V.qrDone) { V.qrDone = true; $('sdQr').innerHTML = qrSvg(location.href); }
+}
+
+/** Kısa QR üretici: bayt modu, hata düzeltme M, sürüm 1–20 (≈660 bayta kadar). */
+function makeQR(text) {
+  const ECC = [10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 26];
+  const BLK = [1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16];
+  const data = Array.from(new TextEncoder().encode(text));
+  const rawMods = v => { let r = (16 * v + 128) * v + 64; if (v >= 2) { const n = Math.floor(v / 7) + 2; r -= (25 * n - 10) * n - 55; if (v >= 7) r -= 36; } return r; };
+  const dataCap = v => Math.floor(rawMods(v) / 8) - ECC[v - 1] * BLK[v - 1];
+  let ver = 0;
+  for (let v = 1; v <= 20 && !ver; v++) if (4 + (v < 10 ? 8 : 16) + data.length * 8 <= dataCap(v) * 8) ver = v;
+  if (!ver) return null;
+  // veri bitleri
+  const bits = [], put = (val, len) => { for (let i = len - 1; i >= 0; i--) bits.push((val >>> i) & 1); };
+  put(4, 4); put(data.length, ver < 10 ? 8 : 16); data.forEach(b => put(b, 8));
+  const cap = dataCap(ver) * 8;
+  put(0, Math.min(4, cap - bits.length));
+  put(0, (8 - bits.length % 8) % 8);
+  for (let p = 0xEC; bits.length < cap; p ^= 0xEC ^ 0x11) put(p, 8);
+  const cw = [];
+  for (let i = 0; i < bits.length; i += 8) { let b = 0; for (let j = 0; j < 8; j++) b = (b << 1) | bits[i + j]; cw.push(b); }
+  // Reed-Solomon
+  const mul = (x, y) => { let z = 0; for (let i = 7; i >= 0; i--) { z = (z << 1) ^ ((z >>> 7) * 0x11D); z ^= ((y >>> i) & 1) * x; } return z; };
+  const eLen = ECC[ver - 1], nb = BLK[ver - 1], div = new Array(eLen).fill(0);
+  div[eLen - 1] = 1;
+  for (let i = 0, root = 1; i < eLen; i++) { for (let j = 0; j < eLen; j++) { div[j] = mul(div[j], root); if (j + 1 < eLen) div[j] ^= div[j + 1]; } root = mul(root, 2); }
+  const rsRem = d => { const r = new Array(eLen).fill(0); for (const b of d) { const f = b ^ r.shift(); r.push(0); for (let i = 0; i < eLen; i++) r[i] ^= mul(div[i], f); } return r; };
+  const raw = Math.floor(rawMods(ver) / 8), nShort = nb - raw % nb, shortLen = Math.floor(raw / nb), blocks = [];
+  for (let i = 0, k = 0; i < nb; i++) {
+    const d = cw.slice(k, k + shortLen - eLen + (i < nShort ? 0 : 1));
+    k += d.length;
+    const e = rsRem(d);
+    if (i < nShort) d.push(0);
+    blocks.push(d.concat(e));
+  }
+  const all = [];
+  for (let i = 0; i < blocks[0].length; i++) blocks.forEach((b, j) => { if (i !== shortLen - eLen || j >= nShort) all.push(b[i]); });
+  // matris
+  const size = ver * 4 + 17;
+  const M = Array.from({ length: size }, () => new Array(size).fill(false));
+  const F = Array.from({ length: size }, () => new Array(size).fill(false));
+  const set = (x, y, d) => { M[y][x] = d; F[y][x] = true; };
+  for (let i = 0; i < size; i++) { set(6, i, i % 2 === 0); set(i, 6, i % 2 === 0); }
+  const finder = (cx, cy) => {
+    for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) {
+      const x = cx + dx, y = cy + dy;
+      if (x >= 0 && y >= 0 && x < size && y < size) { const d = Math.max(Math.abs(dx), Math.abs(dy)); set(x, y, d !== 2 && d !== 4); }
+    }
+  };
+  finder(3, 3); finder(size - 4, 3); finder(3, size - 4);
+  if (ver > 1) {
+    const n = Math.floor(ver / 7) + 2, step = Math.ceil((ver * 4 + 4) / (n * 2 - 2)) * 2, pos = [6];
+    for (let p = size - 7; pos.length < n; p -= step) pos.splice(1, 0, p);
+    pos.forEach((a, i) => pos.forEach((b, j) => {
+      if ((i === 0 && j === 0) || (i === 0 && j === n - 1) || (i === n - 1 && j === 0)) return;
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) set(a + dx, b + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+    }));
+  }
+  const format = mask => {
+    let r = mask;                                   // M seviyesi = 00
+    for (let i = 0; i < 10; i++) r = (r << 1) ^ ((r >>> 9) * 0x537);
+    const b = ((mask << 10) | r) ^ 0x5412, bit = i => ((b >>> i) & 1) === 1;
+    for (let i = 0; i <= 5; i++) set(8, i, bit(i));
+    set(8, 7, bit(6)); set(8, 8, bit(7)); set(7, 8, bit(8));
+    for (let i = 9; i < 15; i++) set(14 - i, 8, bit(i));
+    for (let i = 0; i < 8; i++) set(size - 1 - i, 8, bit(i));
+    for (let i = 8; i < 15; i++) set(8, size - 15 + i, bit(i));
+    set(8, size - 8, true);
+  };
+  format(0);
+  if (ver >= 7) {
+    let r = ver;
+    for (let i = 0; i < 12; i++) r = (r << 1) ^ ((r >>> 11) * 0x1F25);
+    const b = (ver << 12) | r;
+    for (let i = 0; i < 18; i++) { const d = ((b >>> i) & 1) === 1, a = size - 11 + i % 3, c = Math.floor(i / 3); set(a, c, d); set(c, a, d); }
+  }
+  let k = 0;
+  for (let right = size - 1; right >= 1; right -= 2) {
+    if (right === 6) right = 5;
+    for (let v = 0; v < size; v++) for (let j = 0; j < 2; j++) {
+      const x = right - j, y = ((right + 1) & 2) === 0 ? size - 1 - v : v;
+      if (!F[y][x] && k < all.length * 8) { M[y][x] = ((all[k >>> 3] >>> (7 - (k & 7))) & 1) === 1; k++; }
+    }
+  }
+  // maske seçimi
+  const MASKS = [
+    (x, y) => (x + y) % 2 === 0, (x, y) => y % 2 === 0, (x, y) => x % 3 === 0, (x, y) => (x + y) % 3 === 0,
+    (x, y) => (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0, (x, y) => x * y % 2 + x * y % 3 === 0,
+    (x, y) => (x * y % 2 + x * y % 3) % 2 === 0, (x, y) => ((x + y) % 2 + x * y % 3) % 2 === 0,
+  ];
+  const applyMask = m => { for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (!F[y][x] && MASKS[m](x, y)) M[y][x] = !M[y][x]; };
+  const penalty = () => {
+    let p = 0, dark = 0;
+    for (let a = 0; a < size; a++) {
+      let row = '', col = '';
+      for (let b = 0; b < size; b++) { row += M[a][b] ? 1 : 0; col += M[b][a] ? 1 : 0; if (M[a][b]) dark++; }
+      for (const l of [row, col]) {
+        (l.match(/0{5,}|1{5,}/g) || []).forEach(run => { p += run.length - 2; });
+        p += 40 * (l.match(/(?=10111010000|00001011101)/g) || []).length;
+      }
+    }
+    for (let y = 0; y < size - 1; y++) for (let x = 0; x < size - 1; x++) {
+      const c = M[y][x];
+      if (c === M[y][x + 1] && c === M[y + 1][x] && c === M[y + 1][x + 1]) p += 3;
+    }
+    return p + 10 * Math.floor(Math.abs(dark * 20 - size * size * 10) / (size * size));
+  };
+  let best = 0, bestP = Infinity;
+  for (let m = 0; m < 8; m++) { applyMask(m); format(m); const p = penalty(); if (p < bestP) { bestP = p; best = m; } applyMask(m); }
+  applyMask(best); format(best);
+  return M;
+}
+function qrSvg(text) {
+  const M = makeQR(text);
+  if (!M) return '';
+  const n = M.length, q = 4;
+  let d = '';
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (M[y][x]) d += `M${x + q} ${y + q}h1v1h-1z`;
+  return `<svg viewBox="0 0 ${n + 2 * q} ${n + 2 * q}" shape-rendering="crispEdges" role="img" aria-label="QR"><rect width="100%" height="100%" fill="#fff"/><path d="${d}" fill="#1b1410"/></svg>`;
+}
+
+function setUnit() {
+  const h = V.game.clientHeight || window.innerHeight;
+  document.documentElement.style.setProperty('--u', (h / 100).toFixed(2) + 'px');
+}
+
+function init() {
+  buildDom();
+  S = newState('start');
+  resetViews();
+  applyLayout();
+  setUnit();
+  window.addEventListener('resize', () => { applyLayout(); setUnit(); });
+  V.game.addEventListener('pointerdown', onPointerDown, { passive: false });
+  document.addEventListener('pointermove', onPointerMove, { passive: true });
+  document.addEventListener('pointerup', onPointerUp, { passive: true });
+  document.addEventListener('pointercancel', onPointerUp, { passive: true });
+  V.game.addEventListener('touchmove', e => { if (e.cancelable) e.preventDefault(); }, { passive: false });
+  document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
+  document.addEventListener('gesturestart', e => e.preventDefault(), { passive: false });
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  const unlock = () => Sound.unlock();
+  ['touchend', 'pointerup', 'click', 'keydown'].forEach(t => document.addEventListener(t, unlock, { passive: true, capture: true }));
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (S.mode === 'play') S.paused = true;
+      if (Sound.ctx && Sound.ctx.state === 'running') Sound.ctx.suspend();
+    } else {
+      lastTime = performance.now();
+      Sound.resumeIfAllowed();
+    }
+  });
+  if (DEBUG) {
+    window.addEventListener('keydown', e => {
+      const k = (e.key || '').toLowerCase();
+      if (S.mode !== 'play') return;
+      if (k === 'n') S.t += 10;
+      else if (k === 'h') { loseHeart('teyze'); flushFx(); }
+      else if (k === 'p') { S.paused = !S.paused; lastTime = performance.now(); }
+    });
+  }
+  renderState();
+  requestAnimationFrame(frame);
+}
+
+init();
+})();
+</script>
+<script data-goatcounter="https://lifeismehh.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
